@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>House Builder</title>
+<link rel="stylesheet" href="css/ui.css">
+</head>
+<body>
+
+<div id="game-canvas"></div>
+
+<!-- ── LOT SELECTION ───────────────────────────────────────────────── -->
+<div id="lot-select-screen" class="screen">
+  <h1>🏠 HOUSE BUILDER</h1>
+  <p>Choose your lot size to begin building</p>
+  <div class="lot-grid">
+    <button class="lot-btn" data-acres="1">1 Acre<br><small>208×208 ft</small></button>
+    <button class="lot-btn" data-acres="2">2 Acres<br><small>295×295 ft</small></button>
+    <button class="lot-btn" data-acres="3">3 Acres<br><small>360×360 ft</small></button>
+    <button class="lot-btn" data-acres="4">4 Acres<br><small>416×416 ft</small></button>
+    <button class="lot-btn default" data-acres="5">5 Acres ★<br><small>466×466 ft</small></button>
+    <button class="lot-btn" data-acres="6">6 Acres<br><small>510×510 ft</small></button>
+    <button class="lot-btn" data-acres="7">7 Acres<br><small>551×551 ft</small></button>
+    <button class="lot-btn" data-acres="8">8 Acres<br><small>589×589 ft</small></button>
+    <button class="lot-btn" data-acres="9">9 Acres<br><small>624×624 ft</small></button>
+    <button class="lot-btn" data-acres="10">10 Acres<br><small>660×660 ft</small></button>
+    <button class="lot-btn" data-acres="15">15 Acres<br><small>808×808 ft</small></button>
+    <button class="lot-btn" data-acres="20">20 Acres<br><small>933×933 ft</small></button>
+  </div>
+</div>
+
+<!-- ── HUD ─────────────────────────────────────────────────────────── -->
+<div id="hud">
+
+  <!-- Crosshair -->
+  <div id="crosshair"></div>
+
+  <!-- Mode indicator -->
+  <div id="mode-indicator">🚶 Explore</div>
+
+  <!-- Player coordinates -->
+  <div id="player-coords">X 0.0  Z 0.0</div>
+
+  <!-- Drone notification -->
+  <div id="drone-notification"></div>
+
+  <!-- Controller status -->
+  <div id="controller-status">
+    <div class="status-dot"></div>
+    <span>No Controller</span>
+  </div>
+
+  <!-- Toolbar (top right) -->
+  <div id="toolbar">
+    <button class="tool-btn" id="build-mode-btn">🏗️ Build [B]</button>
+    <button class="tool-btn" id="floor-mode-btn">🪵 Floor [L]</button>
+    <button class="tool-btn" id="gun-btn">🎨 Paint [G]</button>
+    <button class="tool-btn" id="pond-mode-btn">💧 Pond [N]</button>
+    <button class="tool-btn" id="planter-mode-btn">🌱 Planter [J]</button>
+    <button class="tool-btn" id="mulch-mode-btn">🍂 Mulch [M]</button>
+    <button class="tool-btn" id="greenhouse-mode-btn">🌿 Greenhouse [H]</button>
+    <button class="tool-btn" id="lights-mode-btn">💡 Lights [I]</button>
+  </div>
+
+  <!-- Build panel (left sidebar) — kept for mouse users -->
+  <div id="build-panel" style="display:none"></div>
+
+  <!-- Floor panel (left, shown in floor mode) -->
+  <div id="floor-panel" style="display:none">
+    <h3>Flooring Type</h3>
+    <div id="floor-type-panel"></div>
+    <div class="build-hint" style="margin-top:6px">Click two corners to place · Q cancel</div>
+  </div>
+
+  <!-- Paint menu (right) -->
+  <div id="paint-menu"></div>
+
+  <!-- Hotbar (explore mode only) -->
+  <div id="hotbar"></div>
+
+  <!-- ── BUILD HUD (bottom bar, shown in build mode) ── -->
+  <div id="build-hud" style="display:none">
+    <div class="bh-top">
+      <div class="bh-tabs" id="bh-tabs">
+        <button class="bh-tab" id="bht-draw"    onclick="window.G?.building.setSubMode('draw')">✏️ DRAW</button>
+        <button class="bh-tab" id="bht-opening" onclick="window.G?.building.setSubMode('opening')">🪟 OPENINGS</button>
+        <button class="bh-tab" id="bht-erase"   onclick="window.G?.building.setSubMode('erase')">🗑️ ERASE</button>
+        <div class="bh-dpad-hint">◀▶ cycle mode</div>
+      </div>
+      <div id="bh-angle" class="bh-angle-badge" style="display:none">0°</div>
+    </div>
+    <div class="bh-bottom">
+      <div id="bh-context" class="bh-context"></div>
+      <div id="bh-ctrl" class="bh-ctrl"></div>
+    </div>
+  </div>
+
+  <!-- ── PAINT HUD (bottom bar, shown in paint mode) ── -->
+  <div id="paint-hud" style="display:none">
+    <div class="bh-top">
+      <span class="bh-mode-label">🎨 PAINT</span>
+    </div>
+    <div class="bh-bottom">
+      <div class="bh-ctrl">
+        <span class="bh-btn">✕/R2</span>Spray &ensp;
+        <span class="bh-btn">▲▼◀▶</span>Cycle Color &ensp;
+        <span class="bh-btn">L2</span>Exit Paint
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FLOOR HUD (bottom bar, shown in floor mode) ── -->
+  <div id="floor-hud" style="display:none">
+    <div class="bh-top">
+      <span class="bh-mode-label">🪵 FLOOR</span>
+      <div id="fh-types" class="bh-tabs"></div>
+      <span class="bh-dpad-hint" style="margin-left:6px">◀▶ change type</span>
+    </div>
+    <div class="bh-bottom">
+      <div class="bh-ctrl">
+        <span class="bh-btn">✕/R2</span>Set corner &ensp;
+        <span class="bh-btn">⭕</span>Cancel &ensp;
+        <span class="bh-btn">◀▶</span>Floor Type &ensp;
+        <span class="bh-btn">L2</span>Exit Floor
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GARDEN HUD (mulch / greenhouse / planter) ── -->
+  <div id="garden-hud" style="display:none">
+    <div class="bh-top">
+      <span id="garden-mode-label" class="bh-mode-label">🌱 GARDEN</span>
+      <span id="garden-hint" style="color:#a8e890;margin-left:12px;font-size:0.82rem"></span>
+    </div>
+    <div class="bh-bottom">
+      <div class="bh-ctrl">
+        <span class="bh-btn">E / ✕</span>Place point &ensp;
+        <span class="bh-btn">E near start</span>Close &amp; build &ensp;
+        <span class="bh-btn">Q / ⭕</span>Cancel &ensp;
+        <span class="bh-btn">L2 hold</span>Mode wheel
+      </div>
+    </div>
+  </div>
+
+  <!-- ── POND HUD (bottom bar, shown in pond mode) ── -->
+  <div id="pond-hud" style="display:none">
+    <div class="bh-top">
+      <span class="bh-mode-label">💧 POND</span>
+      <span id="pond-hint" style="color:#00eeff;margin-left:12px;font-size:0.82rem"></span>
+    </div>
+    <div class="bh-bottom">
+      <div class="bh-ctrl">
+        <span class="bh-btn">E / ✕</span>Place point &ensp;
+        <span class="bh-btn">E near start</span>Close &amp; fill &ensp;
+        <span class="bh-btn">Q / ⭕</span>Cancel &ensp;
+        <span class="bh-btn">N</span>Exit pond mode
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls hint -->
+  <div id="controls-hint">
+    <div class="ch-section">🎮 PS5 — EXPLORE</div>
+    <b>L Stick</b> Move &nbsp; <b>R Stick</b> Look<br>
+    <b>L3</b> Sprint &nbsp; <b>R3</b> Path Tool<br>
+    <b>L2</b> Cycle Mode (Explore→Build→Floor→Paint→Pond)<br>
+    <b>■ / Space</b> Jump<br>
+    <b>L2 hold</b> Mode radial wheel (aim with stick)<br>
+    <b>△</b> Inventory &nbsp; <b>Options</b> Pause<br>
+    <b>✕ / R2</b> Interact / Place / Open Computer<br>
+    <b>⭕</b> Pick Up / Cancel<br>
+    <b>L1 / R1</b> Cycle Hotbar<br>
+    <b>◀▶</b> Rotate held item<br>
+    <div class="ch-section">🏗️ BUILD MODE</div>
+    <b>◀▶ D-pad</b> Cycle sub-mode (Draw/Openings/Erase)<br>
+    <b>▲▼ D-pad</b> Wall Height <em>(draw)</em> / Opening Type <em>(openings)</em><br>
+    <b>L1 / R1</b> Opening Size<br>
+    <b>R3</b> Path Tool &nbsp; <b>L3</b> Generate Roof<br>
+    <b>✕ / R2</b> Place &nbsp; <b>⭕</b> Undo/Cancel<br>
+    <div class="ch-section">🪵 FLOOR MODE</div>
+    <b>◀▶ D-pad</b> Change floor type<br>
+    <b>✕ / R2</b> Set corner &nbsp; <b>⭕</b> Cancel<br>
+    <div class="ch-section">⌨️ KEYBOARD</div>
+    <b>WASD</b> Move &nbsp; <b>Shift</b> Sprint<br>
+    <b>B</b> Build &nbsp; <b>L</b> Floor &nbsp; <b>G</b> Paint<br>
+    <b>F</b> Roof &nbsp; <b>P</b> Path Tool &nbsp; <b>Tab</b> Inventory<br>
+    <b>E / ✕</b> Interact &nbsp; <b>Q</b> Cancel &nbsp; <b>Space</b> Jump
+  </div>
+
+</div>
+
+<!-- ── INVENTORY ────────────────────────────────────────────────────── -->
+<div id="inventory-modal">
+  <div class="inv-header">
+    <h2>🎒 Inventory</h2>
+    <button id="close-inventory">Close [Tab]</button>
+  </div>
+  <div class="inv-hotbar-label">▼ Hotbar (first 8 slots)</div>
+  <div id="inventory-grid"></div>
+</div>
+
+<!-- ── COMPUTER OVERLAY ─────────────────────────────────────────────── -->
+<div id="computer-overlay" style="display:none">
+  <div id="computer-frame">
+    <div id="computer-desktop">
+      <!-- Desktop background gradient shown via CSS -->
+      <div id="desktop-taskbar">
+        <span id="desktop-clock">12:00</span>
+        <span style="flex:1"></span>
+        <span style="font-size:0.7rem;color:#aaa">DRONE OS v1.0</span>
+      </div>
+
+      <!-- App icons -->
+      <div id="desktop-icons">
+        <div class="desktop-icon" data-app="info">
+          <div class="icon-img">ℹ️</div>
+          <div class="icon-label">Info</div>
+        </div>
+        <div class="desktop-icon" data-app="shop">
+          <div class="icon-img">🛒</div>
+          <div class="icon-label">Shop</div>
+        </div>
+      </div>
+
+      <!-- App windows -->
+      <div id="app-info" class="app-window" style="display:none">
+        <div class="app-title-bar">
+          <span>ℹ️ Info</span>
+          <button class="app-close" data-close="info">✕</button>
+        </div>
+        <div class="app-body">
+          <h3>Welcome to DRONE OS</h3>
+          <p>This terminal is connected to the drone delivery network.</p>
+          <p style="margin-top:12px">Use the <b>Shop</b> app to order items. Drones will deliver directly to your property.</p>
+          <p style="margin-top:12px;color:#aaa;font-size:0.8rem">Status: <span style="color:#00ff88">● Online</span></p>
+          <p style="color:#aaa;font-size:0.8rem">Delivery zone: Active</p>
+        </div>
+      </div>
+
+      <div id="app-shop" class="app-window shop-layout" style="display:none">
+        <div class="app-title-bar">
+          <span>🛒 Shop</span>
+          <button class="app-close" data-close="shop">✕</button>
+        </div>
+        <div class="shop-body">
+          <!-- Left: catalog -->
+          <div class="shop-catalog-panel">
+            <h3 style="margin:0 0 8px">Drone Delivery Shop</h3>
+            <p style="color:#aaa;font-size:0.75rem;margin:0 0 10px">Add items to cart · order all at once</p>
+            <div id="shop-catalog"></div>
+          </div>
+          <!-- Right: cart -->
+          <div class="shop-cart-panel">
+            <h3 style="margin:0 0 8px">🛒 Cart</h3>
+            <div id="shop-cart-list" class="cart-list"></div>
+            <div id="shop-cart-total" class="cart-total-label">Cart is empty</div>
+            <button id="shop-order-btn" class="shop-place-order-btn" disabled>Place Order</button>
+            <div class="shop-ctrl-hint">✕ Add · R1 Cart · L1 Catalog · △ Order · ○ Close</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Virtual cursor -->
+      <div id="virtual-cursor">▸</div>
+    </div>
+  </div>
+  <div id="computer-exit-hint">⭕ / O — Exit Computer</div>
+</div>
+
+<!-- ── CHEST INVENTORY ──────────────────────────────────────────────────── -->
+<div id="chest-modal" style="display:none">
+  <div class="chest-inner">
+    <div class="chest-header">
+      <h3>🧰 Storage Chest</h3>
+      <button id="chest-close-btn">✕ Close</button>
+    </div>
+    <div class="chest-body">
+      <div class="chest-section">
+        <div class="chest-sec-label">CHEST STORAGE</div>
+        <div id="chest-grid" class="chest-grid"></div>
+      </div>
+      <div class="chest-section">
+        <div class="chest-sec-label">YOUR INVENTORY</div>
+        <div id="chest-inv-slots" class="chest-grid"></div>
+      </div>
+    </div>
+    <div class="chest-footer"><b>◀▶▲▼</b> Navigate &ensp;·&ensp; <b>✕</b> Move item &ensp;·&ensp; <b>L1/R1</b> Switch panel &ensp;·&ensp; <b>⭕ / E</b> Close</div>
+  </div>
+</div>
+
+<!-- ── PAUSE ────────────────────────────────────────────────────────── -->
+<div id="pause-screen" class="screen" style="display:none">
+  <h2>⏸ PAUSED</h2>
+  <button class="pause-btn" id="resume-btn">▶ Resume</button>
+  <button class="pause-btn" id="quit-btn">↩ Quit to Menu</button>
+</div>
+
+<!-- ── THREE.JS ─────────────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+
+<!-- ── GAME SCRIPTS ─────────────────────────────────────────────────── -->
+<script src="js/controller.js"></script>
+<script src="js/world.js"></script>
+<script src="js/building.js"></script>
+<script src="js/pathsystem.js"></script>
+<script src="js/objects.js"></script>
+<script src="js/inventory.js"></script>
+<script src="js/paintgun.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/shed.js"></script>
+<script src="js/floor.js"></script>
+<script src="js/drone.js"></script>
+<script src="js/pond.js"></script>
+<script src="js/animals.js"></script>
+<script src="js/planterbed.js"></script>
+<script src="js/greenhouse.js"></script>
+<script src="js/mulchbed.js"></script>
+<script src="js/stringlights.js"></script>
+<script src="js/modewheel.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>

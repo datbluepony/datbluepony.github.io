@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Andrew Ciervo — things I've built</title>
+<meta name="description" content="Andrew Ciervo builds software and hardware for real life: an AI camera system for his house on a Raspberry Pi, a Tesla-browser road app, a construction photo pipeline, a PCB for a 240SX, and more.">
+<meta name="theme-color" content="#15160f">
+<meta property="og:title" content="Andrew Ciervo — things I've built">
+<meta property="og:description" content="A house that tells me who pulled into the driveway, a car app that clears fog as I drive, a photo pipeline my coworkers use every other Sunday — and how each one works.">
+<meta property="og:image" content="https://datbluepony.github.io/assets/img/og.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#work">Skip to the work</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5Z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path fill="currentColor" d="M7 4h3.5v16H7zM13.5 4H17v16h-3.5z"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.42-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></symbol>
+  <symbol id="i-in" viewBox="0 0 24 24"><path fill="currentColor" d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3zM9.5 9.75h3.8v1.6h.06c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.77 2.65 4.77 6.1V21h-4v-4.98c0-1.19-.02-2.72-1.66-2.72-1.66 0-1.92 1.3-1.92 2.63V21h-4z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-l" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-r" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.3"/></g></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M12 3 4.5 6v5.5c0 4.6 3.1 8.3 7.5 9.5 4.4-1.2 7.5-4.9 7.5-9.5V6L12 3Z"/><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="m8.8 12.2 2.2 2.2 4.4-4.6"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m11 12 8.5-8.5M16.5 6.5l2.5 2.5M14.5 8.5l2 2"/></g></symbol>
+  <symbol id="i-net" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 3.6 5.4 3.6 8.5S14.5 17.9 12 20.5M12 3.5C9.5 6.1 8.4 8.9 8.4 12s1.1 5.9 3.6 8.5"/></g></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="3" y="6.5" width="13" height="11" rx="2.5"/><path d="m16 10.5 5-3v9l-5-3z"/></g></symbol>
+  <symbol id="i-term" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="m7 9.5 3 2.5-3 2.5M12.5 15h4.5"/></g></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></g></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/></g></symbol>
+  <symbol id="nut" viewBox="0 0 40 40"><path d="M20 2.6 35.1 11.3v17.4L20 37.4 4.9 28.7V11.3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="20" cy="20" r="10.6" fill="none" stroke="currentColor" stroke-width=".8" opacity=".55"/></symbol>
+</svg>
+
+<header class="top" id="top">
+  <div class="wrap">
+    <a class="mark" href="#" aria-label="Andrew Ciervo, back to top">
+      <svg viewBox="0 0 40 40" style="color:var(--olive)"><use href="#nut"/><text x="20" y="24.2" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="11.5" font-weight="600" fill="#ece8dc" letter-spacing=".5">AC</text></svg>
+      <span>Andrew Ciervo</span>
+    </a>
+    <nav aria-label="Sections">
+      <i class="pill"></i>
+      <a href="#work">Work</a>
+      <a href="#cape-house">Cape House</a>
+      <a href="#uncharted">Uncharted</a>
+      <a href="#pulte">Pulte Pics</a>
+      <a href="#how">How I work</a>
+      <a href="#about">About</a>
+    </nav>
+    <div class="clock" aria-label="Local time in Southwest Florida"><span id="clk">12:00</span><small id="ampm">PM</small><em>Southwest Florida</em></div>
+  </div>
+</header>
+
+<main>
+<!-- ======================= HERO ======================= -->
+<section class="hero intro" id="hero">
+  <div class="glow"></div>
+  <svg class="frond" id="frond" viewBox="0 0 520 520" aria-hidden="true"></svg>
+  <div class="wrap hero-grid">
+    <div>
+      <div class="hello st" style="--d:100">Portfolio · Punta Gorda, Florida</div>
+      <h1 class="name"><span class="w"><span style="--d:250">Andrew</span></span><br><span class="w"><span style="--d:420"><i>Ciervo</i></span></span></h1>
+      <p class="lede st" style="--d:700">Electronics tech turned builder. I make the systems I actually want to live with — <b>a house that tells me who just pulled into the driveway</b>, <b>a car app that clears fog off the map as I drive</b>, and <b>a photo pipeline my coworkers use every other Sunday</b>. This page shows what they look like, how they work, and what broke along the way.</p>
+      <div class="cta st" style="--d:850">
+        <a class="btn solid" href="#cape-house">Start with the house <svg><use href="#i-arrow"/></svg></a>
+        <a class="btn ghost" href="#work">All 18 builds</a>
+      </div>
+      <div class="odo st" style="--d:1000" id="odo">
+        <div><span class="num" data-n="18">18</span><small>things built and shipped</small></div>
+        <div><span class="num" data-n="95000" data-suffix="+">95,000+</span><small>lines of code across them</small></div>
+        <div><span class="num" data-n="15">15</span><small>years fixing electronics &amp; helping people</small></div>
+      </div>
+    </div>
+    <div class="tv-wrap">
+      <div class="tv">
+        <div class="screen">
+          <video id="heroVid" src="assets/vid/hub-arrival.mp4" poster="assets/img/hub-clock.webp" muted playsinline loop preload="auto" aria-label="The Cape House Hub waking from its clock screen and flying down onto a 3D model of the house"></video>
+        </div>
+      </div>
+      <div class="tv-cap"><span class="dot"></span><span>The screen in our living room waking up: the clock fades, the camera swoops down onto a 3D model of our real house and lot, then the cards slide in one at a time. It runs on a Raspberry Pi I already owned, the same one doing the camera AI. <a class="link" href="#cape-house">How it works ↓</a></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= INDEX ======================= -->
+<section class="chap" id="work" style="padding-top:40px">
+  <div class="wrap">
+    <div class="sub-head" style="margin-top:0">
+      <h3>Everything, at a glance</h3>
+      <p>Click any card to jump to its write-up. The colored tag says where it lives: <span style="color:var(--sea)">public</span> (open it right now), <span style="color:var(--amber)">private</span> (runs for me or a few people), or <span style="color:var(--olive)">playable</span> (try it on this page).</p>
+    </div>
+    <div class="filters" role="group" aria-label="Filter projects">
+      <button aria-pressed="true" data-f="all">All</button>
+      <button aria-pressed="false" data-f="home">Home &amp; AI</button>
+      <button aria-pressed="false" data-f="car">Cars</button>
+      <button aria-pressed="false" data-f="work">Work tools</button>
+      <button aria-pressed="false" data-f="hw">Hardware</button>
+      <button aria-pressed="false" data-f="web">Websites</button>
+      <button aria-pressed="false" data-f="money">Markets</button>
+      <button aria-pressed="false" data-f="play">Play</button>
+    </div>
+    <div class="grid-work" id="grid">
+      <a class="wk rv" href="#cape-house" data-c="home hw"><div class="im"><img loading="lazy" src="assets/img/hub-home.webp" alt=""><span class="badge priv">Private · daily use</span></div><div class="tx"><b>Cape House</b><span>Camera AI, voice announcements and a 3D home screen, all on one Raspberry Pi.</span><div class="meta"><span>Python · three.js</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#uncharted" data-c="car"><div class="im"><img loading="lazy" src="assets/img/unch-drive.webp" alt=""><span class="badge live">Public beta</span></div><div class="tx"><b>Uncharted</b><span>A Tesla-browser app: every road you drive clears the fog of war.</span><div class="meta"><span>WebGL · MapLibre</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#pulte" data-c="work"><div class="im"><img loading="lazy" src="assets/img/pulte-about.webp" alt=""><span class="badge live">Public · in use</span></div><div class="tx"><b>Pulte Pic System</b><span>Reads a marked-up PDF map, plans the route, shoots and delivers construction photos.</span><div class="meta"><span>OpenCV · Apps Script</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#monsoon" data-c="car hw"><div class="im"><img loading="lazy" src="assets/img/monsoon-pcb.webp" alt="" style="object-position:center"><span class="badge live">Public</span></div><div class="tx"><b>MONSOON S13</b><span>A wiper/washer controller board for a 1993 240SX, with a browser test bench.</span><div class="meta"><span>KiCad · ATtiny1616</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#stag" data-c="work"><div class="im"><img loading="lazy" src="assets/img/stag-board.webp" alt=""><span class="badge priv">Private</span></div><div class="tx"><b>STAG</b><span>Scans 6,600 job postings in 40 s, scores them, builds a tailored packet, fills the form — never submits.</span><div class="meta"><span>Node · Puppeteer</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#surfer" data-c="money"><div class="im"><img loading="lazy" src="assets/img/surfer-home.webp" alt=""><span class="badge priv">Private · retired</span></div><div class="tx"><b>Blockchain Surfer</b><span>DeFi scanner with a rules engine and an atomic flash-loan contract on Base.</span><div class="meta"><span>FastAPI · Solidity</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#property-os" data-c="work"><div class="im"><img loading="lazy" src="assets/img/pos-dashboard.webp" alt=""><span class="badge priv">Private · in development</span></div><div class="tx"><b>Property OS</b><span>CRM, construction tracking and deals for a real-estate office, multi-tenant.</span><div class="meta"><span>Next.js · FastAPI · Supabase</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#garage" data-c="car"><div class="im"><img loading="lazy" src="assets/img/tesladash-drive.webp" alt=""><span class="badge priv">Private</span></div><div class="tx"><b>TeslaDash</b><span>Live car data through Tesla's Fleet API, with gauges and a rank system.</span><div class="meta"><span>Node · WebSocket</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#garage" data-c="car hw play"><div class="im"><img loading="lazy" src="assets/img/led-ambient.webp" alt="" style="object-position:center 8%"><span class="badge play">Playable</span></div><div class="tx"><b>Dash LED build</b><span>ESP32 light strip for a Model 3 dash. No wires cut. Supercaps for the goodbye.</span><div class="meta"><span>ESP32 · WLED usermod</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#trading" data-c="money"><div class="im" style="display:grid;place-items:center;background:linear-gradient(160deg,#1f231a,#121310)"><svg viewBox="0 0 200 110" style="width:72%;opacity:.9"><path d="M5 80 L30 70 L50 76 L70 52 L90 60 L110 38 L130 46 L150 26 L175 34 L195 18" fill="none" stroke="#a9b57a" stroke-width="2"/><path d="M5 95h190" stroke="#3a3d33"/><text x="5" y="14" fill="#9c9886" font-family="JetBrains Mono" font-size="8">RISK 6% → 2% · 1 PER SYMBOL</text></svg><span class="badge priv">Private</span></div><div class="tx"><b>AI MT5 bot</b><span>Forex bot I rebuilt after reading my own trade log for the real cause of losses.</span><div class="meta"><span>Python · MetaTrader 5</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#play" data-c="play"><div class="im"><img loading="lazy" src="assets/img/housegame-play.webp" alt=""><span class="badge play">Playable</span></div><div class="tx"><b>House Builder</b><span>A browser game: build a homestead on 1–20 acres, with a drone that delivers what you order.</span><div class="meta"><span>three.js</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#play" data-c="play home"><div class="im" style="display:grid;place-items:center;background:linear-gradient(160deg,#1a1e22,#101214)"><svg viewBox="0 0 200 120" style="width:70%" fill="none" stroke="#7cc6bf" stroke-width="1.3"><path d="M20 100V55L100 18l80 37v45z"/><path d="M20 55h160M60 100V70h30v30M120 75h35v20h-35z" opacity=".7"/><path d="M5 100h190" stroke="#3a3d33"/><text x="100" y="114" text-anchor="middle" fill="#9c9886" font-family="JetBrains Mono" font-size="7" stroke="none">45 FT · GABLE 8/12 · UE 5.8</text></svg><span class="badge priv">Private</span></div><div class="tx"><b>Barndominium walkthrough</b><span>Our future house, modeled in Fusion 360 and walked through in Unreal with a PS5 controller.</span><div class="meta"><span>Fusion 360 · Unreal 5</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#web" data-c="web"><div class="im"><img loading="lazy" src="assets/img/nepc.webp" alt=""><span class="badge live">Public · client</span></div><div class="tx"><b>New England Pressure Cleaning</b><span>A real business's website in Naples, FL. Fast, static, no dependencies.</span><div class="meta"><span>HTML · CSS</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#web" data-c="web"><div class="im"><img loading="lazy" src="assets/img/ccf.webp" alt=""><span class="badge live">Public · concept</span></div><div class="tx"><b>Finance firm redesign</b><span>An unsolicited redesign concept, built as a pitch.</span><div class="meta"><span>HTML · CSS</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#web" data-c="web home"><div class="im"><img loading="lazy" src="assets/img/bigmove.webp" alt=""><span class="badge live">Public</span></div><div class="tx"><b>Our Big Move</b><span>The family homestead plan, with a floor plan drawn true to a hand sketch.</span><div class="meta"><span>HTML · CSS</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#tools" data-c="home"><div class="im"><img loading="lazy" src="assets/img/landhunter.webp" alt=""><span class="badge priv">Private</span></div><div class="tx"><b>FL Land Hunter</b><span>One-file offline tracker for 5–10 acre parcels: flood zone X, paved road, under $100k.</span><div class="meta"><span>HTML</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#tools" data-c="hw play"><div class="im" style="display:grid;place-items:center;background:radial-gradient(ellipse at 50% 35%,#2b2f24,#121310 70%)"><svg viewBox="0 0 200 120" style="width:66%" fill="none" stroke="#a9b57a" stroke-width="1.3"><path d="M30 80 L100 100 L170 80 L170 55 L100 35 L30 55Z"/><path d="M30 55 L100 75 L170 55M100 75v25" opacity=".6"/><g opacity=".8"><rect x="104" y="52" width="9" height="4" rx="1"/><rect x="118" y="56" width="9" height="4" rx="1"/><rect x="132" y="60" width="9" height="4" rx="1"/><circle cx="72" cy="58" r="8"/></g></svg><span class="badge play">Spin it</span></div><div class="tx"><b>Charging dock</b><span>A 3D-printed desk dock written as a parametric Fusion 360 script.</span><div class="meta"><span>Fusion 360 API · Python</span><span>2026</span></div></div></a>
+      <a class="wk rv" href="#tools" data-c="car"><div class="im" style="display:grid;place-items:center;background:#0f100c"><pre style="font:500 11px/1.5 var(--mono);color:#7cc6bf;opacity:.85">00 00 00 00 6D 64 61 74
+<span style="color:#e58a7c">size = 0</span>  → never finalized
+patch → moov_start − 32
+HEVC → H.264  ✓ plays</pre><span class="badge priv">One-off</span></div><div class="tx"><b>Dashcam recovery</b><span>Got crash footage off a corrupted card for a neighbor's insurance claim.</span><div class="meta"><span>MP4 forensics · ffmpeg</span><span>2026</span></div></div></a>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 01 CAPE HOUSE ======================= -->
+<section class="chap" id="cape-house">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="chap-no">01</span>
+        <span class="k"><b>Cape House</b> · Home AI · Raspberry Pi · Private, used every day</span>
+        <h2 class="t">A house that knows who <em>just pulled in</em></h2>
+      </div>
+      <div>
+        <p class="lede">Jenna and I are moving into a new house in Cape Coral. The ISP's router does the bare minimum and every smart camera wants a subscription. So I built our own system on the Raspberry Pi already sitting on my desk — budget: $0.</p>
+        <p class="lede">It watches the cameras, works out what's actually happening ("Jenna's Model 3 just pulled into the garage", "FedEx delivery at the front door"), says it out loud in a natural voice, and shows it all on a 3D model of the house on our TV. It's also the start of the firewall and VPN for the whole house.</p>
+        <div class="tags"><span class="tag priv">Private</span><span class="tag">Python</span><span class="tag">Docker Compose</span><span class="tag">Frigate</span><span class="tag">ONNX Runtime</span><span class="tag">CLIP · YOLOX · YuNet · PaddleOCR</span><span class="tag">three.js</span><span class="tag">MQTT</span><span class="tag">nginx</span><span class="tag">Tailscale</span><span class="tag">Home Assistant</span></div>
+      </div>
+    </div>
+
+    <!-- screen switcher -->
+    <div class="hubsw rv">
+      <div class="hubtabs" role="tablist" aria-label="Hub screens" id="hubtabs">
+        <i class="pill"></i>
+        <button role="tab" aria-selected="true" data-i="0">Home</button>
+        <button role="tab" aria-selected="false" data-i="1">Security</button>
+        <button role="tab" aria-selected="false" data-i="2">A scene</button>
+        <button role="tab" aria-selected="false" data-i="3">AI training</button>
+        <button role="tab" aria-selected="false" data-i="4">Network</button>
+        <button role="tab" aria-selected="false" data-i="5">Settings</button>
+        <button role="tab" aria-selected="false" data-i="6">Clock</button>
+      </div>
+      <div class="tv"><div class="screen stack" id="hubstack">
+        <img class="on" src="assets/img/hub-home.webp" alt="Hub home screen: a 3D model of the house with recent activity, garage status, lights, thermostat and camera tiles" data-cap="<b>Home.</b> A 3D model of the real house and lot, lit by the real sun and moon for Cape Coral. Cameras, lights and doors on the model are tappable. The list on the left is what the cameras saw today, in plain sentences — and the Garage card knows which of our cars is home.">
+        <img loading="lazy" src="assets/img/hub-security.webp" alt="Security screen with live camera and activity list" data-cap="<b>Security.</b> Every detection is grouped into a scene and given one sentence. A day picker covers two weeks of history, with an hourly activity chart and filters for people, vehicles, animals and plates.">
+        <img loading="lazy" src="assets/img/hub-scene-garage.webp" alt="Scene viewer showing a red Tesla outlined with confidence bars" data-cap="<b>A scene.</b> Open one and you get the full-resolution screenshots, the AI's outline, what it thinks and how sure it is (<i>3 of 3 screenshots agree</i>), and a <b>Fix</b> button that teaches it on the spot. ← → steps through detections, O toggles the overlay.">
+        <img loading="lazy" src="assets/img/hub-training.webp" alt="AI training tab with a grid of detections" data-cap="<b>AI training.</b> Every detection with the AI's top guesses. I type what it really was — “red Tesla, mine”, “neighbor taking his trash out” — and the note is parsed into labels it learns from. The raw notes are kept, so I can always see why I disagreed.">
+        <img loading="lazy" src="assets/img/hub-network.webp" alt="Network screen with protection layers and gauges" data-cap="<b>Network.</b> The protection layers for the house (router firewall, DNS filter, Pi firewall for chosen devices, everything-through-the-Pi), real CPU / memory / disk / temperature gauges, remote access and devices online. Turning a layer on needs the Hub PIN.">
+        <img loading="lazy" src="assets/img/hub-settings.webp" alt="Settings screen with voice announcement options" data-cap="<b>Settings.</b> What the house says out loud (everything / important / nothing), which voice, quiet hours, per-camera AI on/off, and sound effects. It also shows how late the last few announcements were, measured end to end.">
+        <img loading="lazy" src="assets/img/hub-clock.webp" alt="Clock screen" data-cap="<b>Clock.</b> After two idle minutes the TV becomes a clock with the weather, sunset and who's home. Jenna loves stingrays, so every so often one swims across.">
+      </div></div>
+      <p class="hubcap" id="hubcap"></p>
+    </div>
+
+    <div class="cols c2" style="margin-top:2.5rem">
+      <figure class="rv"><div class="tv"><div class="screen"><video data-auto src="assets/vid/hub-voice.mp4" poster="assets/img/hub-home.webp" muted playsinline loop preload="none"></video></div></div>
+        <figcaption style="margin-top:2.4rem"><b>Spoken announcements.</b> A chime, then the voice; each word lights up as it's said, and the 3D view turns toward the spot. Urgent ones are casual on purpose: “Yo, someone's walking into the garage.”</figcaption></figure>
+      <figure class="rv" style="--i:1"><div class="tv"><div class="screen"><video data-auto src="assets/vid/hub-arrival.mp4" poster="assets/img/hub-clock.webp" muted playsinline loop preload="none"></video></div></div>
+        <figcaption style="margin-top:2.4rem"><b>The wake-up flight</b>, staged one step at a time — flight, then frame, then cards, then camera cones — because the Pi's GPU stutters when everything moves at once. Shadows are baked, never drawn live.</figcaption></figure>
+    </div>
+
+    <!-- scenes -->
+    <div class="sub-head"><h3>What the cameras saw</h3><p>Real scenes from the test camera, as the Hub shows them. The AI draws its own outline on the sharp screenshot, with how sure it is. (A delivery driver's face is blurred here; visitors' names are swapped for generic words.)</p></div>
+    <div class="cols c3">
+      <figure class="rv"><div class="shot" data-lb="scenes"><img loading="lazy" src="assets/img/hub-scene-leaving.webp" alt="White Tesla pulling out of the garage, outlined at 99%"></div><figcaption><b>“Jenna's Model 3 Long Range pulled out of the garage and left.”</b> Known cars need color + verified photos + a body-shape check.</figcaption></figure>
+      <figure class="rv" style="--i:1"><div class="shot" data-lb="scenes"><img loading="lazy" src="assets/img/hub-scene-fedex.webp" alt="Delivery driver walking up the driveway"></div><figcaption><b>“FedEx delivery in front of the house.”</b> 40 sharp screenshots; uniform + walk to the door + truck at the curb.</figcaption></figure>
+      <figure class="rv" style="--i:2"><div class="shot" data-lb="scenes"><img loading="lazy" src="assets/img/hub-scene-trash.webp" alt="Person rolling a bin at dawn"></div><figcaption><b>“Jenna took the trash out.”</b> Someone who starts at the garage is from the house — never a delivery, visitor or alert.</figcaption></figure>
+    </div>
+
+    <!-- pipeline -->
+    <div class="sub-head"><h3>From tire to voice, in about four seconds</h3><p>Press play to walk through what happens when a car pulls in. Each stage is a real piece of the system, with the timings I measured on the Pi.</p></div>
+    <div class="pipe rv" id="pipe">
+      <div class="pipe-top">
+        <button class="play" id="pipePlay" aria-label="Play the pipeline"><svg><use href="#i-play"/></svg></button>
+        <div class="t"><span id="pipeT">0.00</span><small>s</small></div>
+        <div class="pipe-say" id="pipeSay" aria-live="polite"></div>
+      </div>
+      <div class="track" id="track"></div>
+      <div class="bar-prog"><i id="pipeBar"></i></div>
+      <p class="note">Typical timings, stage by stage. Night, glare and palm fronds in the way make it slower; when the AI isn't sure yet, the screen says “Checking what drove by…” and stays quiet instead of guessing out loud.</p>
+    </div>
+
+    <!-- architecture -->
+    <div class="sub-head"><h3>What's inside the Pi</h3><p>Everything runs in Docker on a 4 GB Raspberry Pi Compute Module 5. Dashed red boxes are services that have no login, so they never get a port on the network. The moving lines are data.</p></div>
+    <div class="diagram rv">
+      <svg viewBox="0 0 1240 600" role="img" aria-label="Architecture: cameras into the NVR, go2rtc and Frigate, MQTT into hub-api which runs the AI models and writes scenes, voices, and serves the Hub through nginx to the TV, PC and Tailscale">
+        <rect class="zone" x="236" y="16" width="836" height="568" rx="22"/>
+        <text x="256" y="42" class="mono">RASPBERRY PI CM5 · 4 GB · DOCKER COMPOSE</text>
+        <path class="flow" d="M110 132 V170"/>
+        <path class="flow" d="M200 205 C230 205 230 95 260 95"/>
+        <path class="flow" d="M355 130 V170"/>
+        <path class="flow" d="M355 250 V300"/>
+        <path class="flow" d="M450 330 C480 330 480 120 510 120"/>
+        <path class="flow sea" d="M450 80 C480 80 480 165 510 165"/>
+        <path class="flow" d="M450 215 C480 215 480 360 510 360"/>
+        <path class="flow" d="M580 460 V490"/><path class="flow" d="M740 460 V490"/>
+        <path class="flow sea" d="M810 165 C845 165 845 165 880 165"/>
+        <path class="flow" d="M450 345 C640 380 760 345 880 335"/>
+        <path class="flow sea" d="M1050 140 C1065 140 1065 100 1080 100"/>
+        <path class="flow amber" d="M1050 190 C1065 190 1065 240 1080 240"/>
+        <g class="box"><rect x="20" y="62" width="180" height="70" rx="12"/><text x="36" y="92">Cameras</text><text x="36" y="114" class="sm">2560×1920 main · 640×480 sub</text></g>
+        <g class="box"><rect x="20" y="170" width="180" height="70" rx="12"/><text x="36" y="200">Reolink NVR</text><text x="36" y="222" class="sm">RTSP · view-only account</text></g>
+        <g class="box lock"><rect x="260" y="60" width="190" height="70" rx="12"/><text x="276" y="90">go2rtc restream</text><text x="276" y="112" class="mono">:1984 never published</text></g>
+        <g class="box lock"><rect x="260" y="170" width="190" height="80" rx="12"/><text x="276" y="198">Frigate 0.18</text><text x="276" y="218" class="sm">detect 4 fps · zones · faces</text><text x="276" y="238" class="mono">:5000 never published</text></g>
+        <g class="box"><rect x="260" y="300" width="190" height="62" rx="12"/><text x="276" y="328">Mosquitto (MQTT)</text><text x="276" y="348" class="sm">localhost + Docker net only</text></g>
+        <g class="box hot"><rect x="510" y="40" width="300" height="420" rx="16"/><text x="530" y="72" style="font-size:16px">hub-api</text><text x="600" y="72" class="sm">Python · ~6k lines · SQLite (WAL)</text>
+          <text x="530" y="108" class="mono">live.py ······ MQTT feed, paths, zones</text>
+          <text x="530" y="136" class="mono">grabber ····· full-res keyframes → RAM</text>
+          <text x="530" y="164" class="mono">detector ···· YOLOX-nano / YOLOX-s</text>
+          <text x="530" y="192" class="mono">describer ··· CLIP + nearest examples</text>
+          <text x="530" y="220" class="mono">faces ······· YuNet + video refiner</text>
+          <text x="530" y="248" class="mono">lpr / looker  PaddleOCR plates + logos</text>
+          <text x="530" y="276" class="mono">memory ······ vehicle fingerprints</text>
+          <text x="530" y="304" class="mono">scenes ······ groups + one sentence</text>
+          <text x="530" y="332" class="mono">announce ···· what to say, and when</text>
+          <text x="530" y="360" class="mono">cameras ····· AI on/off over MQTT</text>
+          <text x="530" y="400" class="sm">Only reachable through nginx /api/.</text><text x="530" y="420" class="sm">Every POST needs the Hub PIN.</text></g>
+        <g class="box"><rect x="510" y="490" width="140" height="62" rx="12"/><text x="526" y="518">Kokoro voice</text><text x="526" y="538" class="sm">natural, pre-recorded</text></g>
+        <g class="box"><rect x="670" y="490" width="140" height="62" rx="12"/><text x="686" y="518">Piper voice</text><text x="686" y="538" class="sm">quick fallback</text></g>
+        <g class="box hot"><rect x="880" y="110" width="170" height="100" rx="14"/><text x="896" y="140">nginx :80</text><text x="896" y="162" class="sm">allowlist: localhost,</text><text x="896" y="178" class="sm">house subnet, Tailscale</text><text x="896" y="196" class="mono">read-only proxy paths</text></g>
+        <g class="box"><rect x="880" y="300" width="170" height="70" rx="12"/><text x="896" y="330">Home Assistant</text><text x="896" y="352" class="sm">lights · thermostat · plugs</text></g>
+        <g class="box hot"><rect x="1080" y="62" width="145" height="76" rx="12"/><text x="1096" y="92">The Hub</text><text x="1096" y="114" class="sm">TV kiosk · PC · tablet</text></g>
+        <g class="box"><rect x="1080" y="202" width="145" height="76" rx="12"/><text x="1096" y="232">Tailscale</text><text x="1096" y="254" class="sm">phones, away from home</text></g>
+        <text x="1096" y="320" class="mono">no ports forwarded</text><text x="1096" y="336" class="mono">on the router</text>
+      </svg>
+    </div>
+
+    <!-- security -->
+    <div class="sub-head"><h3>Locks on the doors</h3><p>The part most people never ask about. A camera system is a set of eyes on your family — so the defaults are “closed” and every write needs a reason.</p></div>
+    <div class="locks">
+      <div class="lock rv"><svg><use href="#i-lock"/></svg><b>Nothing without a login touches the network</b><p>Frigate's API (<code>:5000</code>) and the go2rtc restream (<code>:1984</code>) have no authentication, so they're never published. nginx proxies only the specific read-only paths the Hub needs: snapshots, events, stats and the live socket.</p></div>
+      <div class="lock rv" style="--i:1"><svg><use href="#i-shield"/></svg><b>An allowlist at the front door</b><p>nginx answers only localhost and Docker, the house subnet (set per install — nothing depends on today's Wi-Fi or IPs) and Tailscale's <code>100.64.0.0/10</code>. Everyone else gets nothing.</p></div>
+      <div class="lock rv" style="--i:2"><svg><use href="#i-key"/></svg><b>A PIN on every change</b><p>Reads are open inside the house; writes are not. Every POST — labeling a face, turning a camera's AI off, teaching it a car — needs an <code>X-Hub-PIN</code> header checked on the Pi. The PIN lives in a 600-permission secrets file, never in the page.</p></div>
+      <div class="lock rv" style="--i:3"><svg><use href="#i-net"/></svg><b>Remote access without opening the router</b><p>Phones reach home over Tailscale (WireGuard). Zero port forwards. The Pi also advertises an exit node, so a laptop on hotel Wi-Fi can send everything home first.</p></div>
+      <div class="lock rv"><svg><use href="#i-cam"/></svg><b>Least privilege for the cameras</b><p>The Pi logs in to the recorder with a view-only guest account. It can watch; it can't change a setting or delete a recording. RTMP stays off.</p></div>
+      <div class="lock rv" style="--i:1"><svg><use href="#i-term"/></svg><b>Boring server hygiene</b><p>SSH by key only (passwords off), <code>rpcbind</code> masked, unattended security upgrades, and every container capped so the AI can't starve the TV or the voice.</p></div>
+      <div class="lock rv" style="--i:2"><svg><use href="#i-undo"/></svg><b>Changes that can't lock me out</b><p>Any firewall or network change ships with a timer that rolls it back unless I confirm SSH still works. Every system file is copied to <code>file.bak-YYYYMMDD</code> before it's touched.</p></div>
+      <div class="lock rv" style="--i:3"><svg><use href="#i-box"/></svg><b>Built here, installed there</b><p>It was built on a test network and moves to the new house later, so nothing is hard-coded to a Wi-Fi name, subnet or IP. The camera zones get re-measured on site with a script.</p></div>
+    </div>
+
+    <!-- accuracy -->
+    <div class="sub-head"><h3>Teaching it, one Saturday at a time</h3><p>The describer started as a generic image model guessing from a few words. Each round I hand-checked every detection from the camera, and it learned from my labels. The test is leave-one-out over everything labeled so far, so later rounds are harder exams.</p></div>
+    <div class="split wide-l">
+      <div class="chart rv" id="acc">
+        <div class="legend"><span><i style="background:var(--sea-deep)"></i>All answers</span><span><i style="background:var(--amber-deep)"></i>Only when it says it's ≥ 80% sure</span></div>
+        <svg viewBox="0 0 720 330" id="accSvg" aria-label="Accuracy over training rounds"></svg>
+        <div class="tip" id="accTip"></div>
+        <details class="tablev"><summary>Show as a table</summary><table id="accTable"></table></details>
+      </div>
+      <div class="rv" style="--i:1">
+        <p class="quote">When it says it's sure, it's right <em>95%</em> of the time.</p>
+        <p class="muted" style="margin-top:1rem;font-size:.95rem">That's the number that matters for a house that talks: 262 of 276 confident answers were right in the last round. When it isn't sure, it waits for another look instead of announcing a guess. Overall it went from <b style="color:var(--ink)">50%</b> to <b style="color:var(--ink)">83%</b> on a test eight times bigger.</p>
+        <ul class="bul">
+          <li><b>~3,000 examples</b>: my own labels (weighted ×3–4) plus Open Images crops for rare vehicles.</li>
+          <li><b>Pooled looks</b>: each detection combines every sharp screenshot it's in, counted as at most 3 independent looks.</li>
+          <li><b>Tuned with a grid search</b> over k, blend weight and class balance, using the same leave-one-out test.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- performance -->
+    <div class="sub-head"><h3>Smooth on a Raspberry Pi</h3><p>The Pi's GPU is the bottleneck, and I watch the TV closely. Every animation change gets measured on the real TV in frames per second before I call it done.</p></div>
+    <div class="gauges" id="gauges">
+      <div class="gauge rv" data-v="58"><svg viewBox="0 0 120 80"><path class="trk" d="M12 66 A48 48 0 1 1 108 66" fill="none" stroke-width="8" stroke-linecap="round"/><path class="val" d="M12 66 A48 48 0 1 1 108 66" fill="none" stroke-width="8" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg><b>58</b><span>fps idle, 3D home</span></div>
+      <div class="gauge rv" data-v="55" style="--i:1"><svg viewBox="0 0 120 80"><path class="trk" d="M12 66 A48 48 0 1 1 108 66" fill="none" stroke-width="8" stroke-linecap="round"/><path class="val" d="M12 66 A48 48 0 1 1 108 66" fill="none" stroke-width="8" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg><b>55</b><span>fps during the arrival flight</span></div>
+      <div class="gauge rv" data-v="44" style="--i:2"><svg viewBox="0 0 120 80"><path class="trk" d="M12 66 A48 48 0 1 1 108 66" fill="none" stroke-width="8" stroke-linecap="round"/><path class="val" d="M12 66 A48 48 0 1 1 108 66" fill="none" stroke-width="8" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg><b>44</b><span>fps dragging the house around</span></div>
+      <div class="gauge bad rv" data-v="11" style="--i:3"><svg viewBox="0 0 120 80"><path class="trk" d="M12 66 A48 48 0 1 1 108 66" fill="none" stroke-width="8" stroke-linecap="round"/><path class="val" d="M12 66 A48 48 0 1 1 108 66" fill="none" stroke-width="8" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg><b>11</b><span>fps when the TV woke up at 4K (fixed)</span></div>
+    </div>
+    <div class="cols c3" style="margin-top:1.2rem">
+      <div class="card rv"><span class="k">Baked, not live</span><p>Live shadows cost 12–15 fps while turning. Now the shadow map is drawn only when the sun moves, into a 1024² top-down mask the ground reads. The sky is one still picture, redrawn every 5 minutes.</p></div>
+      <div class="card rv" style="--i:1"><span class="k">Quiet while it moves</span><p>Background AI steals memory bandwidth from the GPU. Before any big animation the Hub calls <code>/api/quiet</code>, which freezes the voice recorder (SIGSTOP) and pauses the describer between frames.</p></div>
+      <div class="card rv" style="--i:2"><span class="k">Lighter in the background</span><p>Idle 3D redraws at 15 fps, 24 with labels up — the kiosk's idle CPU went from ~59% to ~37%. Lists update in place by key, so nothing re-animates or flickers on refresh.</p></div>
+    </div>
+
+    <!-- lessons -->
+    <div class="sub-head"><h3>What broke, and what I changed</h3><p>The honest part. Every one of these happened on the live system, and each one turned into a rule.</p></div>
+    <ol class="lessons">
+      <li class="rv"><div><b>Unplugging one camera froze all of them.</b><p>The recorder's RTSP server hung for every channel while go2rtc kept retrying the dead one. Now a removed camera's streams are removed too.</p></div></li>
+      <li class="rv"><div><b>The “sharp” screenshots showed the street before the car got there.</b><p>I'd assumed 0.3 s of stream delay. Matching AI outlines to the live paths showed 3.6 s — two of those seconds were ffmpeg holding each keyframe until the next. Low-delay flags fixed it; the real figure is 1.6 s and every new camera gets measured.</p></div></li>
+      <li class="rv"><div><b>A 1 GB vision model killed the TV.</b><p>Testing Florence-2 pushed the Pi out of memory and the kernel shut down the TV's browser mid-use. Rule now: small models only — the text finder I ended up with is 4.7 MB.</p></div></li>
+      <li class="rv"><div><b>The AI learned the parking spot instead of the car.</b><p>Color examples taught it that anything in my spot is black. Our own cars now train a separate color model, and when the pixels and the describer agree, they win (my car went from 14/73 to 73/73 “red”).</p></div></li>
+      <li class="rv"><div><b>“Andrew's car left” at 5 and 7 PM. It hadn't.</b><p>Frigate's box jumped from a car driving by onto my parked one. Jumping tracks are detected now, and a car found again where another one was parked is the same car.</p></div></li>
+      <li class="rv"><div><b>The TV woke up at 4K.</b><p>Turning the TV off and on doesn't unplug it, so the display tool never re-applied 1080p: everything half size, 11 fps. A small guard checks every 3 seconds and puts it back.</p></div></li>
+      <li class="rv"><div><b>An upgrade erased history it couldn't redo.</b><p>A model version bump cleared descriptions for 129 detections whose screenshots had already been trimmed. Restored from a database copy; now only detections that can be re-described are ever cleared.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 02 UNCHARTED ======================= -->
+<section class="chap" id="uncharted">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="chap-no">02</span>
+        <span class="k"><b>Uncharted</b> · Web app for the Tesla browser · Public beta</span>
+        <h2 class="t">Every road you drive <em>clears the fog</em></h2>
+      </div>
+      <div>
+        <p class="lede">The map starts dark. Every road you drive reveals it for good, so your commute slowly becomes a map you uncovered. On the way it tells you about the places you pass, scores how smooth your driving is with a virtual glass of water, and flashes red-blue when Florida 511 reports police activity nearby.</p>
+        <p class="lede">Hard rule: it runs in a car's browser with <b>no build step, no accounts, no API keys and no paid services</b>.</p>
+        <div class="cta" style="margin-top:1.4rem"><a class="btn solid" href="https://datbluepony.github.io/uncharted/?sim=boston&amp;autostart=1" target="_blank" rel="noopener">Watch a demo drive <svg><use href="#i-ext"/></svg></a><a class="btn ghost" href="https://github.com/datbluepony/uncharted" target="_blank" rel="noopener"><svg><use href="#i-gh"/></svg> Source</a></div>
+      </div>
+    </div>
+    <div class="carscreen rv"><div class="screen"><video data-auto src="assets/vid/uncharted-drive.mp4" poster="assets/img/unch-drive.webp" muted playsinline loop preload="none" aria-label="Demo drive through Boston: the car icon moves, places pop up with stories, the glass of water sloshes"></video></div></div>
+    <p class="note">A simulated drive through Boston, recorded from the live site. The places, photos and stories come from Wikipedia as you go.</p>
+
+    <div class="sub-head"><h3>Try the fog</h3><p>A small version of the idea, running right here. Move your mouse or finger to drive — or leave it alone and it drives itself. It keeps track of the ground you've uncovered, like the real app's grid.</p></div>
+    <div class="demo rv" id="fogDemo">
+      <div style="position:relative"><canvas id="fog" width="1200" height="560"></canvas>
+      <div class="hud"><div class="chip"><b id="fogKm">0.00 km²</b>explored</div><div class="chip" style="text-align:right"><b id="fogPct">0%</b>of this town</div></div>
+      <div class="hint" id="fogHint">move to drive · it drives itself when you stop</div></div>
+      <div class="demo-bar"><button id="fogReset">Reset the fog</button><span class="sp">The real one does this on the GPU for 40,000 cells at once.</span></div>
+    </div>
+
+    <div class="cols c3" style="margin-top:2rem">
+      <figure class="rv"><div class="shot" data-lb="unch"><img loading="lazy" src="assets/img/unch-car.webp" alt="Car screen with energy and Superchargers"></div><figcaption><b>Car screen.</b> A live Model 3 with g-forces, an energy model for the trim it detects from the browser, and the nearest Superchargers.</figcaption></figure>
+      <figure class="rv" style="--i:1"><div class="shot" data-lb="unch"><img loading="lazy" src="assets/img/unch-sky.webp" alt="Star map"></div><figcaption><b>Sky tab.</b> 5,044 real stars oriented to where the car points, the planets, the Moon's real phase. Unlocks for passengers or when parked.</figcaption></figure>
+      <figure class="rv" style="--i:2"><div class="shot" data-lb="unch"><img loading="lazy" src="assets/img/unch-collection.webp" alt="Collection of places"></div><figcaption><b>Collection.</b> Places you've passed, with rarities, quests and XP. It locks while moving: eyes on the road.</figcaption></figure>
+    </div>
+
+    <div class="cols c3" style="margin-top:1.4rem">
+      <div class="card rv"><span class="k">The fog: 800 ms → under 1 ms</span><p>The first version projected each explored cell every frame — 100–800 ms per frame at 40,000 cells. Now it's a WebGL custom layer: one 1024² texture aligned to the map, re-uploaded only when new ground is revealed (profiled at 0.45 ms). Pan, zoom and tilt cost nothing.</p></div>
+      <div class="card rv" style="--i:1"><span class="k">A voice that works in a car</span><p>Linux Chromium in the car often has no speech voices at all. So it ships a neural voice (Piper) that runs in a background worker, entirely in the browser — a one-time 63 MB download, then it reads stories offline.</p></div>
+      <div class="card rv" style="--i:2"><span class="k">Free data only</span><p>Map tiles from CARTO/OpenStreetMap, places from Wikipedia, weather from Open-Meteo, cameras from Overpass, incidents from FDOT's FL511 feed, alerts from the National Weather Service. No keys to leak, nothing to pay. 80 browser tests run against the live site.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 03 PULTE ======================= -->
+<section class="chap" id="pulte">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="chap-no">03</span>
+        <span class="k"><b>Pulte Pic System</b> · Field app + agents' site · Public, used every other Sunday</span>
+        <h2 class="t">It reads the map, <em>plans the drive</em>, and delivers the photos</h2>
+      </div>
+      <div>
+        <p class="lede">Every other Sunday I photograph new-construction lots in a community in Estero so three sales agents can send each buyer a progress update on their home. The agents mark the lots on a PDF map with colored stars. It used to be a morning of squinting at the map, driving in circles and sorting photos by hand.</p>
+        <p class="lede">Now my phone reads their stars straight out of the PDF, plans a route that goes around the lakes, walks me lot to lot, and the photos land in each agent's page in full resolution before I'm back in the truck. Running cost: $0.</p>
+        <div class="cta" style="margin-top:1.4rem"><a class="btn solid" href="https://datbluepony.github.io/pulte-pics/about.html" target="_blank" rel="noopener">How it works, in its own words <svg><use href="#i-ext"/></svg></a></div>
+      </div>
+    </div>
+    <div class="split wide-r">
+      <div class="rv" style="display:flex;justify-content:center"><div class="phone"><div class="screen"><img loading="lazy" src="assets/img/pulte-app.webp" alt="Pulte Pics phone app: new photo run, upload the starred map"></div></div></div>
+      <figure class="rv" style="--i:1"><div class="browser"><div class="bar"><i></i><i></i><i></i><span>datbluepony.github.io/pulte-pics/about.html</span></div><div class="shot" data-lb="pulte" style="border:0;border-radius:0"><img loading="lazy" src="assets/img/pulte-about.webp" alt="Pulte Pics about page"></div></div><figcaption><b>The showcase page</b> I wrote for the agents. Real numbers: 2,400 lots on the master map, ~1 minute to read every star, photos live while I walk to the next house, 13 days to download.</figcaption></figure>
+    </div>
+
+    <div class="sub-head"><h3>Plan a run</h3><p>A live, simplified version of the route planner: stars land on lots, then it visits them over the streets only — never across the lake. It's a real breadth-first search on a grid, same idea as the app's rasterized street map.</p></div>
+    <div class="demo rv" id="routeDemo">
+      <div style="position:relative"><canvas id="route" width="1200" height="520"></canvas>
+      <div class="hud"><div class="chip"><b id="rtLots">0</b>lots starred</div><div class="chip" style="text-align:right"><b id="rtDist">0 m</b>route over streets</div></div></div>
+      <div class="demo-bar"><button id="rtNew">New photo run</button><span class="sp">Blue, pink and yellow stars = three agents.</span></div>
+    </div>
+
+    <div class="cols c4" style="margin-top:2rem">
+      <div class="card rv"><span class="k">01 · Read the stars</span><p><code>pdf.js</code> pulls each star's position <i>and</i> color (the color is the agent) from the PDF's vector drawing — not from pixels — plus the legend names.</p></div>
+      <div class="card rv" style="--i:1"><span class="k">02 · Find the lot</span><p>OpenCV template matching finds where each map screenshot sits on the master community map; each star gets the nearest lot label, checked against a lot index.</p></div>
+      <div class="card rv" style="--i:2"><span class="k">03 · Drive &amp; shoot</span><p>Compass, distance and mini-map to the next lot. Its own camera: lens choice, Night mode for interiors, rotation baked into the file so photos are always upright.</p></div>
+      <div class="card rv" style="--i:3"><span class="k">04 · Deliver</span><p>Google Apps Script in my own Google account files photos into Drive by date/agent/lot, emails the agents when the last lot lands, and deletes runs after 13 days.</p></div>
+    </div>
+    <div class="cols c2" style="margin-top:1.2rem">
+      <div class="card rv"><span class="k">Auth &amp; privacy</span><p>A team passcode is checked by the Google script, not in the browser, and entered once per device. Each lot is its own link, so a buyer who gets a forwarded email can never see someone else's home. Stage notes are neutral — no completion dates promised. Retention outlives an agent's forwarding delay.</p></div>
+      <div class="card rv" style="--i:1"><span class="k">Field-tested the hard way</span><p>Real failures came from stale copies of the app on phones and an old deployed script. So the app force-updates from a version file, and the backend has a test harness that runs <code>Code.gs</code> against fake Drive, mail, cache and locks through two full photo runs before anything is published.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 04 MONSOON ======================= -->
+<section class="chap" id="monsoon">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="chap-no">04</span>
+        <span class="k"><b>MONSOON S13</b> · Hardware + firmware + simulator · Public</span>
+        <h2 class="t">New wipers for a <em>1993 240SX</em></h2>
+      </div>
+      <div>
+        <p class="lede">My friend Alex's 240SX needed its wiper and washer brain replaced. We designed a board that plugs into the factory stalk and the factory motor through a custom sub-harness — no wire in the car gets cut — and runs everything from one fused 12 V input. He measured on the bench; I did the schematic, layout, firmware and a test bench you can use in a browser.</p>
+        <div class="cta" style="margin-top:1.4rem"><a class="btn ghost" href="https://github.com/datbluepony/monsoon-s13" target="_blank" rel="noopener"><svg><use href="#i-gh"/></svg> Source</a></div>
+      </div>
+    </div>
+    <div class="split">
+      <figure class="rv"><div class="shot" data-lb="monsoon" style="background:radial-gradient(ellipse at 50% 40%,#202536,#0c0d10 75%)"><img loading="lazy" src="assets/img/monsoon-pcb.webp" alt="3D render of the blue MONSOON S13 circuit board with three relays"></div><figcaption><b>MONSOON S13 v1.0.</b> 120 × 85 mm, two layers, 2 oz copper, blue mask. Three relays, an ATtiny1616, and “Designed by Alex &amp; Andrew” on the silkscreen.</figcaption></figure>
+      <div class="rv" style="--i:1">
+        <h3 class="s">The detail that decided everything</h3>
+        <p class="muted">I read the scanned 1991–94 factory service manual page by page. The key finding: the wiper motor is switched on the <b style="color:var(--ink)">ground side</b>. The brushes run when they're grounded, and the auto-stop contact is grounded while sweeping and at +12 V when parked, which brakes the motor. Get that backwards and the whole output stage is wrong.</p>
+        <dl class="spec">
+          <dt>Brain</dt><dd>ATtiny1616, Arduino core, flashed over UPDI</dd>
+          <dt>Inputs</dt><dd>8 universal ADC channels read contacts and the delay ring alike</dd>
+          <dt>Modes</dt><dd>Park, intermittent 2–12 s (tapered ring), LO, HI, wash + fast-fast-slow + drip wipe</dd>
+          <dt>Safety</dt><dd>20 A fuse, TVS, reverse-polarity diode, park-fault timeout: 8 s with no auto-stop change → all off</dd>
+          <dt>Loads</dt><dd>Designed for 3–5 A running, 12–15 A stall (Alex's measurements)</dd>
+          <dt>Checks</dt><dd>Schematic generated by script, ERC/DRC clean, autorouted with Freerouting</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="sub-head"><h3>The virtual test bench</h3><p>It's built from the circuit board file itself — the netlist is solved in the browser and 18 design checks run on load, so mistakes show up before a board is ever ordered. Move the stalk, twist the ring, crank the engine.</p></div>
+    <div class="embed rv" id="monsoonEmbed" style="aspect-ratio:16/10">
+      <div class="poster" data-src="https://datbluepony.github.io/monsoon-s13/"><img loading="lazy" src="assets/img/monsoon-sim.webp" alt=""><span><svg><use href="#i-play"/></svg> Open the test bench here</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 05 STAG ======================= -->
+<section class="chap" id="stag">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="chap-no">05</span>
+        <span class="k"><b>STAG</b> · Job search engine · Private, runs on my PC</span>
+        <h2 class="t">A job search that <em>shows its math</em></h2>
+      </div>
+      <div>
+        <p class="lede">“Ciervo” is Spanish for stag, hence the name. STAG scans company job boards directly — about 6,600 postings in 40 seconds — scores each one against my profile with a weighted model I can read, writes a tailored résumé and cover letter, and opens the real application with everything it's sure about filled in. Then it stops. A human clicks submit.</p>
+        <p class="lede">It also probes eight applicant-tracking systems for companies that never post to the big job sites: the last sweep found 34 hidden boards, about 1,100 extra postings a run.</p>
+      </div>
+    </div>
+    <div class="cols c2">
+      <figure class="rv"><div class="browser"><div class="bar"><i></i><i></i><i></i><span>localhost:4545 · Board</span></div><div class="shot" data-lb="stag" style="border:0;border-radius:0"><img loading="lazy" src="assets/img/stag-board.webp" alt="STAG board of scored jobs"></div></div><figcaption><b>The board.</b> Every posting scored, best first. Keyboard driven: J/K to move, S to shortlist, F to auto-fill.</figcaption></figure>
+      <figure class="rv" style="--i:1"><div class="browser"><div class="bar"><i></i><i></i><i></i><span>localhost:4545 · Why it scored 93</span></div><div class="shot" data-lb="stag" style="border:0;border-radius:0"><img loading="lazy" src="assets/img/stag-drawer.webp" alt="STAG job detail with score breakdown"></div></div><figcaption><b>Why it scored what it scored</b> — every point accounted for, plus which résumé version and which true bullets it will use.</figcaption></figure>
+    </div>
+    <div class="sub-head"><h3>Score a job yourself</h3><p>These are STAG's real weights and hard caps. Slide the dimensions, tick a cap, and watch the tier change.</p></div>
+    <div class="calc rv" id="calc">
+      <div id="sliders"></div>
+      <div class="ring">
+        <svg viewBox="0 0 200 200"><circle class="tr" cx="100" cy="100" r="82" fill="none" stroke-width="12"/><circle class="vl" id="ringV" cx="100" cy="100" r="82" fill="none" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" transform="rotate(-90 100 100)"/><text class="n" id="ringN" x="100" y="118" text-anchor="middle">0</text></svg>
+        <div class="tier" id="ringTier">—</div>
+        <div class="why" id="ringWhy"></div>
+      </div>
+    </div>
+    <div class="cols c3" style="margin-top:1.2rem">
+      <div class="card rv"><span class="k">Nothing invented, ever</span><p>Résumés are assembled by <b>selecting and ordering</b> pre-written, true bullets across five versions. No made-up metrics, titles or certifications. Cover letters quote the posting's own words instead of claiming things that can't be checked.</p></div>
+      <div class="card rv" style="--i:1"><span class="k">Never clicks submit</span><p>Auto-fill fills only fields it's certain about, uploads the tailored PDF, and stops. It deliberately leaves every EEO, demographic, disability and veteran question blank for me. No LinkedIn or Indeed automation — that breaks their terms.</p></div>
+      <div class="card rv" style="--i:2"><span class="k">Private stays private</span><p>Pay history and physical limits are filtering inputs only: they adjust scores and never appear in a résumé, letter or answer. Everything runs locally; the only traffic out is the public job-board APIs. 52 headless checks guard the dashboard.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 06 SURFER ======================= -->
+<section class="chap" id="surfer">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="chap-no">06</span>
+        <span class="k"><b>Blockchain Surfer</b> · DeFi scanner &amp; executor · Private, retired Oct 2026</span>
+        <h2 class="t">Six scanners, one rule: <em>prove it first</em></h2>
+      </div>
+      <div>
+        <p class="lede">A 24/7 service on the same Raspberry Pi that watched public DeFi data on Base, Arbitrum and Polygon every 15 seconds, scored what it found from 0 to 100, and only acted when a rules engine and an on-chain dry run both agreed. I shut it down and moved the Pi to home duty in October 2026.</p>
+        <p class="lede">The interesting part isn't trading. It's building something that handles real money and has to refuse far more often than it acts.</p>
+      </div>
+    </div>
+    <figure class="rv"><div class="browser"><div class="bar"><i></i><i></i><i></i><span>Mission Control</span></div><video data-auto src="assets/vid/surfer-live.mp4" poster="assets/img/surfer-home.webp" muted playsinline loop preload="none"></video></div><figcaption><b>Mission Control</b>, the Next.js dashboard, live over WebSockets: opportunity radar, the “block miner” that digs one layer per scan, the scoring core and an equity curve. Recorded with a demo data feed — the real wallet isn't connected anymore.</figcaption></figure>
+    <div class="cols c4" style="margin-top:2rem">
+      <div class="card rv"><span class="k">01 · Scan</span><p>Prices, yields, vaults, cross-DEX spreads, liquidation health factors, gas — six scanners concurrently every 15 s (FastAPI, asyncio, APScheduler).</p></div>
+      <div class="card rv" style="--i:1"><span class="k">02 · Score</span><p>0–100 from profitability, liquidity, confidence and competition, minus a volatility penalty. A small ML model ran in shadow mode first and earned weight only after 30, then 100 real outcomes.</p></div>
+      <div class="card rv" style="--i:2"><span class="k">03 · Rules</span><p>Minimum confidence 80, profit ≥ 3× costs, max 10% exposure per trade, daily loss limit, a review mode after consecutive losses, gas-spike and liquidity guards.</p></div>
+      <div class="card rv" style="--i:3"><span class="k">04 · Dry run, then act</span><p>Every transaction is simulated with <code>eth_call</code> first — a doomed one costs zero gas. The contract dry run is ground truth, not the scanner's math.</p></div>
+    </div>
+    <div class="split" style="margin-top:2rem">
+      <div class="rv">
+        <h3 class="s">An atomic contract with one exit</h3>
+        <p class="muted">I wrote and deployed a Solidity contract (Foundry, fork-tested 11/11) for flash-loan liquidations: borrow the debt from Aave, liquidate, swap the collateral, repay the loan plus 0.05%, keep the difference — all in one transaction. Every path ends in a single check: <code>require(finalUSDC &gt;= input + minProfit)</code>. If anything is off, the whole thing reverts. Worst case is the gas fee. The contract holds no funds at rest.</p>
+      </div>
+      <ol class="lessons rv" style="--i:1">
+        <li><div><b>“No opportunities” was a bug, not a quiet market.</b><p>A chain audit found 30 liquidations in 14 days; we'd caught 0. The scanner only looked back 2.3 days for borrowers. A resumable backfill to the beginning of the chain plus risk-tiered health checks fixed it.</p></div></li>
+        <li><div><b><code>docker compose restart</code> doesn't reload env vars.</b><p>A safety feature sat switched off for hours because the container kept its old environment. Recreate, then verify inside the running process.</p></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 07 PROPERTY OS ======================= -->
+<section class="chap" id="property-os">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="chap-no">07</span>
+        <span class="k"><b>Property OS</b> · Full-stack SaaS · Private, in development, not launched</span>
+        <h2 class="t">One system for a <em>real-estate office</em></h2>
+      </div>
+      <div>
+        <p class="lede">The same agents handle resale, new construction and new leads, in five different tools. Property OS puts lead intake and AI texting, construction lot tracking with photo runs, and the deal pipeline in one place, built to be sold per office. It's feature-complete as an MVP and private — no customers, no revenue, and I'll say exactly that.</p>
+      </div>
+    </div>
+    <div class="cols c2">
+      <figure class="rv"><div class="browser"><div class="bar"><i></i><i></i><i></i><span>Property OS · Overview</span></div><div class="shot" data-lb="pos" style="border:0;border-radius:0"><img loading="lazy" src="assets/img/pos-dashboard.webp" alt="Property OS overview dashboard"></div></div></figure>
+      <figure class="rv" style="--i:1"><div class="browser"><div class="bar"><i></i><i></i><i></i><span>Property OS · Messages · AI engine</span></div><div class="shot" data-lb="pos" style="border:0;border-radius:0"><img loading="lazy" src="assets/img/pos-messages.webp" alt="Property OS AI messaging"></div></div></figure>
+      <figure class="rv"><div class="browser"><div class="bar"><i></i><i></i><i></i><span>Property OS · Leads</span></div><div class="shot" data-lb="pos" style="border:0;border-radius:0"><img loading="lazy" src="assets/img/pos-leads.webp" alt="Property OS leads pipeline"></div></div></figure>
+      <figure class="rv" style="--i:1"><div class="browser"><div class="bar"><i></i><i></i><i></i><span>Property OS · Onboarding</span></div><div class="shot" data-lb="pos" style="border:0;border-radius:0"><img loading="lazy" src="assets/img/pos-onboarding.webp" alt="Property OS onboarding wizard"></div></div></figure>
+    </div>
+    <p class="note">Screenshots from my dev machine with the sample data that ships in the repo.</p>
+    <div class="cols c3" style="margin-top:1.6rem">
+      <div class="card rv"><span class="k">Auth</span><p>Supabase Auth with <code>@supabase/ssr</code> session cookies in Next.js 16. The FastAPI side verifies the JWT on every request through a <code>get_current_user</code> dependency on all ten routers. The only public routes are the ones that must be: Twilio and Facebook lead webhooks and the Google OAuth callback.</p></div>
+      <div class="card rv" style="--i:1"><span class="k">Multi-tenancy</span><p>An <code>orgs</code> table and an <code>org_id</code> on all 15 data tables. Middleware reads the org from the JWT into a per-request <code>ContextVar</code>, and every service filters reads and stamps writes with it — one office can never see another's leads.</p></div>
+      <div class="card rv" style="--i:2"><span class="k">APIs</span><p>Twilio SMS with an AI agent whose tone and hours are configurable, Google Calendar booking, Stripe Checkout + Customer Portal + webhooks (returns safe mock data when keys aren't set, so dev never touches real billing), CSV and webhook lead intake.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 08 GARAGE ======================= -->
+<section class="chap" id="garage">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="chap-no">08</span>
+        <span class="k"><b>The garage</b> · Car projects · Private</span>
+        <h2 class="t">I wrench on cars. <em>Some of it is code.</em></h2>
+      </div>
+      <div>
+        <p class="lede">Two builds for my red Model 3 Performance: a dashboard for the car's live data through Tesla's own API, and a light strip in the dash that greets me when the car wakes up and says goodbye after it shuts off — without cutting a single wire.</p>
+      </div>
+    </div>
+
+    <h3 class="s rv">TeslaDash</h3>
+    <div class="split wide-l">
+      <figure class="rv"><div class="browser"><div class="bar"><i></i><i></i><i></i><span>localhost:3737</span></div><video data-auto src="assets/vid/tesladash.mp4" poster="assets/img/tesladash-drive.webp" muted playsinline loop preload="none"></video></div><figcaption>Running against a sample data feed for this page, so it never wakes the real car.</figcaption></figure>
+      <div class="rv" style="--i:1">
+        <span class="k" style="display:block;margin-bottom:.8rem">How the login works</span>
+        <ol class="lessons" style="margin-top:0">
+          <li><div><b>Register as a Tesla Fleet API partner.</b><p>Tesla requires an app's public key at <code>/.well-known/appspecific/com.tesla.3p.public-key.pem</code> on a real domain. I served it through an ngrok tunnel just for the registration.</p></div></li>
+          <li><div><b>OAuth with scopes.</b><p>Sign in on <code>auth.tesla.com</code>; the callback swaps the code for an access token and a refresh token.</p></div></li>
+          <li><div><b>Tokens stay on the server.</b><p>Kept in a server-side file and refreshed before expiry; the browser never sees one. The server polls every 10 s and pushes over a WebSocket.</p></div></li>
+        </ol>
+      </div>
+    </div>
+
+    <h3 class="s rv" style="margin-top:3.5rem">Dash LED: the wake-up and the goodbye</h3>
+    <div class="rv" style="border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#0a0b0e"><video data-auto src="assets/vid/led-reel.mp4" muted playsinline loop preload="none" style="width:100%" aria-label="LED strip animations: wake, blind-spot warning, goodbye"></video></div>
+    <p class="note">Wake → blind-spot warning (left) → goodbye, recorded from the simulator I wrote to design the animations before installing anything.</p>
+    <div class="cols c4" style="margin-top:1.4rem">
+      <div class="card rv"><span class="k">Wake</span><p>The ESP32 booting <i>is</i> the signal: the outlet gets power when the car wakes, so no signal wire is tapped. 90 LEDs split at the center and mirror outward.</p></div>
+      <div class="card rv" style="--i:1"><span class="k">Goodbye</span><p>A 10 kΩ / 3.9 kΩ divider turns 12 V into 3.37 V for the ADC. When it drops, two 10 F supercapacitors keep the ESP32 alive for the 3.8 s goodbye, then deep sleep.</p></div>
+      <div class="card rv" style="--i:2"><span class="k">Blind spot</span><p>The 2023 Highland has a proprietary diagnostic port and unpublished CAN IDs, so phototransistors read the factory A-pillar indicators optically instead.</p></div>
+      <div class="card rv" style="--i:3"><span class="k">Firmware</span><p>Custom-compiled WLED with my own usermod for the triggers, debounce and hold times; presets for wake, goodbye, ambient and each blind-spot side.</p></div>
+    </div>
+    <div class="sub-head"><h3>Play with the simulator</h3><p>The actual design tool, embedded. Click presets, change speed and brightness.</p></div>
+    <div class="embed rv" style="aspect-ratio:16/9">
+      <div class="poster" data-src="play/dash-led/"><img loading="lazy" src="assets/img/led-rainbow.webp" alt=""><span><svg><use href="#i-play"/></svg> Load the LED simulator</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 09 TRADING ======================= -->
+<section class="chap" id="trading">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="chap-no">09</span>
+        <span class="k"><b>AI MT5 bot</b> · Forex automation · Private</span>
+        <h2 class="t">Read the log <em>before</em> you change the code</h2>
+      </div>
+      <div>
+        <p class="lede">My forex bot had a losing stretch. Instead of tweaking indicators, I went through the closed-trade log line by line. The strategy wasn't the main problem — the risk setup was. Three structural causes:</p>
+        <ul class="bul">
+          <li><b>Three positions, one bet.</b> Up to three trades on the same pair in the same direction. When one was wrong, all three were.</li>
+          <li><b>6% risk each</b>, so a single bad signal could cost 18% of the account in a day.</li>
+          <li><b>The 5 PM wick.</b> Repeated entries right before the session close, stopped out on the spike.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="expo rv" id="expo">
+      <div>
+        <span class="k" style="display:block;margin-bottom:1rem">Worst single-signal loss</span>
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div><div style="font-size:.84rem;color:var(--ink-2);margin-bottom:.4rem">Open trades on one idea</div><div class="seg" data-k="pos"><button aria-pressed="false" data-v="1">1</button><button aria-pressed="false" data-v="2">2</button><button aria-pressed="true" data-v="3">3</button></div></div>
+          <div class="sl" style="grid-template-columns:7.5rem 1fr 3rem;padding:0"><label for="riskR">Risk per trade</label><input type="range" id="riskR" min="1" max="6" step=".5" value="6"><output id="riskO">6%</output></div>
+          <div><div style="font-size:.84rem;color:var(--ink-2);margin-bottom:.4rem">Setup</div><div class="seg" data-k="mode"><button aria-pressed="true" data-v="old">Before</button><button aria-pressed="false" data-v="new">After the rebuild</button></div></div>
+        </div>
+      </div>
+      <div class="ebars">
+        <div class="ebar"><div class="lab"><span>If the signal is wrong</span><b id="eLoss">−18%</b></div><div class="tr"><i id="eBar"></i><span class="lim" id="eLim" style="left:33.3%"></span></div></div>
+        <p class="muted" style="font-size:.86rem" id="eTxt"></p>
+        <ul class="bul" style="margin-top:0">
+          <li>One position per symbol across EURUSD, GBPUSD and USDJPY; 2% risk; a hard 5% daily stop.</li>
+          <li>A session-close block plus a freeze around 5 PM; no off-hours entries.</li>
+          <li>M15 + H1 + H4 trend must agree; six entry strategies, each tagged so a bounded ML optimizer can tune its own thresholds every 30 minutes.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 10 PLAY ======================= -->
+<section class="chap" id="play">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="chap-no">10</span>
+        <span class="k"><b>Build &amp; play</b> · Browser game · Unreal walkthrough</span>
+        <h2 class="t">Designing the <em>next</em> house, too</h2>
+      </div>
+      <div>
+        <p class="lede">The long-term plan is land and a barndominium. I modeled it in Fusion 360 and walk through it in Unreal Engine 5 with a PS5 controller — 45 feet wide, 10-foot walls, an 8/12 gable roof. And because planning a homestead is more fun as a game, I wrote one.</p>
+      </div>
+    </div>
+    <div class="embed rv" style="aspect-ratio:16/9">
+      <div class="poster" data-src="play/house-builder/"><img loading="lazy" src="assets/img/housegame-build.webp" alt=""><span><svg><use href="#i-play"/></svg> Play House Builder</span></div>
+    </div>
+    <div class="cols c3" style="margin-top:1.4rem">
+      <div class="card rv"><span class="k">What you can do</span><p>Pick 1–20 acres, draw walls corner to corner, generate a roof, paint, lay floors, dig a pond, plant beds, mulch, a greenhouse and string lights. Order supplies and a drone delivers them. Animals wander the lot.</p></div>
+      <div class="card rv" style="--i:1"><span class="k">Controls</span><p>Mouse + keyboard (B build, G paint, L floor, N pond, H greenhouse, I lights, Tab inventory) or a PS5 controller with a radial mode wheel. Click the game to capture the mouse; Esc to let go.</p></div>
+      <div class="card rv" style="--i:2"><span class="k">How</span><p>Plain JavaScript and three.js, ~11,000 lines, no build step. One module per tool: paint gun, path system, pond, greenhouse, drone.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 11 WEB ======================= -->
+<section class="chap" id="web">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="chap-no">11</span>
+        <span class="k"><b>Websites</b> · Static, fast, hosted free on GitHub Pages</span>
+        <h2 class="t">Sites for people <em>I know</em></h2>
+      </div>
+      <div><p class="lede">No frameworks, no build step, nothing to break. Push to main and it's live.</p></div>
+    </div>
+    <div class="mini-browser-row">
+      <figure class="rv"><a class="browser" href="https://datbluepony.github.io/new-england-pressure-cleaning/" target="_blank" rel="noopener" style="display:block"><div class="bar"><i></i><i></i><i></i><span>New England Pressure Cleaning</span></div><img loading="lazy" src="assets/img/nepc.webp" alt="New England Pressure Cleaning website"></a><figcaption><b>New England Pressure Cleaning</b> — client work for a real roof-soft-wash and pressure-washing business in Naples, FL, with sitemap and basic SEO.</figcaption></figure>
+      <figure class="rv" style="--i:1"><a class="browser" href="https://datbluepony.github.io/our-big-move/" target="_blank" rel="noopener" style="display:block"><div class="bar"><i></i><i></i><i></i><span>Our Big Move</span></div><img loading="lazy" src="assets/img/bigmove.webp" alt="Our Big Move website"></a><figcaption><b>Our Big Move</b> — our family's homestead vision, with a floor plan drawn to match a hand sketch exactly: every door where the red marks say.</figcaption></figure>
+      <figure class="rv" style="--i:2"><a class="browser" href="https://datbluepony.github.io/ccf-site-preview/" target="_blank" rel="noopener" style="display:block"><div class="bar"><i></i><i></i><i></i><span>Redesign concept</span></div><img loading="lazy" src="assets/img/ccf.webp" alt="Finance firm website redesign concept"></a><figcaption><b>Redesign concept</b> — an unsolicited pitch for a Naples finance firm. Labeled a proposal; not their live site.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 12 TOOLS ======================= -->
+<section class="chap" id="tools">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="chap-no">12</span>
+        <span class="k"><b>Small tools</b> · One-offs that solved one problem</span>
+        <h2 class="t">Little things, <em>done properly</em></h2>
+      </div>
+      <div><p class="lede">Not everything needs to be a platform. These each fixed one real problem for me or someone I know.</p></div>
+    </div>
+    <div class="split">
+      <div class="rv">
+        <div class="stl" id="stl"><canvas></canvas><span class="hint">drag to spin · 4,898 triangles</span></div>
+      </div>
+      <div class="rv" style="--i:1">
+        <h3 class="s">Charging dock, written as code</h3>
+        <p class="muted">A desk dock for six USB ports and two device cradles, generated by a Python script against the Fusion 360 API: every pocket, wall and port cutout comes from measured dimensions, so changing a device means editing a number and re-running. A second script adds smooth topographic hills to the top face. Printed in PLA. This is the actual print file — spin it.</p>
+      </div>
+    </div>
+    <div class="split" style="margin-top:3.5rem">
+      <figure class="rv"><div class="shot" data-lb="tools"><img loading="lazy" src="assets/img/landhunter.webp" alt="FL Land Hunter dashboard"></div></figure>
+      <div class="rv" style="--i:1">
+        <h3 class="s">FL Land Hunter</h3>
+        <p class="muted">Tracks our search for 5–10 wooded acres in Southwest/Central Florida: flood Zone X, paved road frontage, under $100k. Instead of only watching listings, it links straight to each county's tax-deed auctions and code-enforcement records — the properties nobody's marketing. One HTML file; double-click to open; nothing installed.</p>
+      </div>
+    </div>
+    <div class="split" style="margin-top:3.5rem">
+      <div class="rv">
+        <h3 class="s">Dashcam recovery</h3>
+        <p class="muted">A neighbor's dashcam recorded a crash, but every file on the card “was corrupt.” Two separate causes: the recording was cut off by the impact, so the MP4's data-size field was literally 0 and players never found the index at the end; and the video was HEVC, which this Windows build can't decode. I patched the size field in copies, carved the newest footage by resyncing on HEVC frame boundaries, and transcoded to H.264.</p>
+        <p class="muted" style="margin-top:.8rem">The trap: the camera overwrites only the <i>start</i> of an old file, so the part that repairs cleanly is often the wrong day. I verified every clip against its internal timestamp and the time burned into the pixels — and flagged a date mismatch before it went to the insurer.</p>
+      </div>
+      <div class="rv card" style="--i:1;font-family:var(--mono);font-size:.82rem;line-height:1.75;color:var(--ink-2)">
+        <span class="k">what the file said</span>
+        <div>00000018 &nbsp;<span style="color:var(--coral)">00 00 00 00</span> 6d 64 61 74 &nbsp;<span class="muted">....mdat</span></div>
+        <div class="muted">→ size 0: “runs to end of file”</div>
+        <div>…moov index sits near the end, never reached</div>
+        <div style="margin-top:.6rem">patch: size = moov_start − 32</div>
+        <div>verify: creation_time ✓ · burned-in OSD ✓</div>
+        <div>ffmpeg: hevc → h264 &nbsp;<span style="color:var(--sea)">plays ✓</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= HOW I WORK ======================= -->
+<section class="chap" id="how">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="k"><b>How I work</b></span>
+        <h2 class="t">Rules I <em>actually</em> follow</h2>
+      </div>
+      <div><p class="lede">These come straight from the notes I keep at the top of every project.</p></div>
+    </div>
+    <div class="principles">
+      <div class="pr rv"><q>It has to work the first time.</q><p>Plan it fully, explain it, get a yes, then build. No trial-and-error on a live system that a family depends on.</p></div>
+      <div class="pr rv" style="--i:1"><q>Test it where it lives.</q><p>On the real TV, in the real car browser, on the real phone in the field. Screenshots and frame rates, not “it worked on my machine.”</p></div>
+      <div class="pr rv" style="--i:2"><q>Never lock yourself out.</q><p>Back up before editing. Roll back automatically unless a change is confirmed. Know how to undo it before doing it.</p></div>
+      <div class="pr rv" style="--i:3"><q>Free first.</q><p>Most of what's on this page costs nothing to run: the Pi I already had, GitHub Pages, Google Apps Script, public data feeds.</p></div>
+      <div class="pr rv"><q>Measure, then fix.</q><p>The bot's losses, the camera's 3.6-second lag, the missed liquidations — each was found by checking ground truth, not by guessing.</p></div>
+      <div class="pr rv" style="--i:1"><q>Write it so a busy person gets it.</q><p>Plain words, short sentences, outcome first. The house says “Someone's at the front door,” not “Person detected, zone 3.”</p></div>
+    </div>
+    <div class="callout rv" style="margin-top:2.4rem;max-width:56em">I build with AI coding tools — mostly <b>Claude Code</b> — the same way a shop uses power tools. I decide what gets built and how it should behave, I test it on the real device, I catch what's wrong, and I own the result. It's how one person ships hardware, firmware, back ends, front ends and documentation on eighteen projects.</div>
+  </div>
+</section>
+
+<!-- ======================= ABOUT ======================= -->
+<section class="chap" id="about">
+  <div class="wrap">
+    <div class="chap-head">
+      <div>
+        <span class="k"><b>About</b></span>
+        <h2 class="t">Hi, I'm <em>Andrew</em>.</h2>
+      </div>
+      <div>
+        <p class="lede">I started out with a soldering iron on aircraft lighting, ran my own automotive-electronics business for six years, and today I'm the last quality check on Teslas before they're handed to their owners. Fixing things and explaining them clearly to the person in front of me is the job I've always had. Software is how I do more of it.</p>
+        <p class="lede">I live in Southwest Florida with Jenna. I like cars more than is probably healthy.</p>
+      </div>
+    </div>
+    <ol class="tl">
+      <li class="rv"><span class="yr">2025 — now</span><div><b>Delivery Vehicle Prep Lead <small>Tesla</small></b><p>The final quality gate before customer delivery: inspections, software verification, diagnostics, ADAS calibration support. Wrote the location's prep SOP and trained the team; site quality went from about 80% to a steady 95–100%.</p></div></li>
+      <li class="rv"><span class="yr">2020 — 2025</span><div><b>Technician &amp; customer operations <small>Kawi Performance</small></b><p>Diagnosed complex mechanical and electrical systems, explained findings in plain language, and ran several customer projects at once from first call to final test.</p></div></li>
+      <li class="rv"><span class="yr">2014 — 2020</span><div><b>Founder &amp; owner <small>LED ATT</small></b><p>Designed, built and installed custom automotive lighting. Ran the whole business solo — up to 100 customer conversations a day, Stripe operations, website, inventory — and grew an audience of 32,000+.</p></div></li>
+      <li class="rv"><span class="yr">2010 — 2014</span><div><b>Electronics &amp; maintenance technician <small>Aircraft Lighting International</small></b><p>FAA-compliant electronics repair, soldering, testing and documentation, where mistakes carry real consequences. Prototypes from schematics, 3D-printed parts.</p></div></li>
+      <li class="rv"><span class="yr">Training</span><div><b>Certified IPC Specialist, J-STD-001 <small>Soldering</small></b><p>Electrical engineering coursework at Farmingdale State College.</p></div></li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <h2>Want to talk about <em>something I built?</em></h2>
+      <div class="links">
+        <a class="btn solid" href="https://www.linkedin.com/in/andrew-ciervo" target="_blank" rel="noopener"><svg><use href="#i-in"/></svg> LinkedIn</a>
+        <a class="btn ghost" href="https://github.com/datbluepony" target="_blank" rel="noopener"><svg><use href="#i-gh"/></svg> GitHub</a>
+      </div>
+    </div>
+    <small>Andrew Ciervo · Southwest Florida · Hand-written HTML, CSS and JavaScript, no framework and no build step — like most of what's above. Fonts: Fraunces, Inter, JetBrains Mono.</small>
+  </div>
+</footer>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Screenshot viewer">
+  <div class="im"><img alt=""></div><div class="cap"></div>
+  <button class="x" aria-label="Close"><svg><use href="#i-x"/></svg></button>
+  <button class="pv" aria-label="Previous"><svg><use href="#i-l"/></svg></button>
+  <button class="nx" aria-label="Next"><svg><use href="#i-r"/></svg></button>
+</div>
+
+<script src="assets/js/site.js" defer></script>
+<script src="assets/js/demos.js" defer></script>
+</body>
+</html>

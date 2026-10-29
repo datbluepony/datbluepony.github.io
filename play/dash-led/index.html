@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tesla Dash LED Simulator</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #08090d; --surf: #0e0f14; --bdr: #1c1e26;
+  --txt: #c0c4d4; --dim: #464a58; --acc: #3b6bde;
+}
+body {
+  background: var(--bg); color: var(--txt);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px; min-height: 100vh;
+  padding: 28px 16px 56px;
+  display: flex; flex-direction: column; align-items: center;
+}
+header { text-align: center; margin-bottom: 22px; }
+header h1 { font-size: 13px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #e8ecf8; }
+header p  { font-size: 11px; color: var(--dim); letter-spacing: .06em; margin-top: 4px; }
+
+.card { background: var(--surf); border: 1px solid var(--bdr); border-radius: 14px; width: 100%; max-width: 1060px; margin-bottom: 12px; }
+.scard { padding: 18px 18px 14px; }
+.smeta { display: flex; justify-content: space-between; font-size: 10px; color: var(--dim); letter-spacing: .05em; margin-bottom: 8px; }
+#cv { display: block; width: 100%; height: 110px; }
+
+.ctrl { padding: 20px; }
+.sec  { margin-bottom: 18px; }
+.sec:last-child { margin-bottom: 0; }
+.lbl  { font-size: 9.5px; text-transform: uppercase; letter-spacing: .15em; color: var(--dim); margin-bottom: 10px; }
+.row  { display: flex; flex-wrap: wrap; gap: 8px; }
+hr.dv { border: none; border-top: 1px solid var(--bdr); margin: 16px 0; }
+
+.pg-wrap { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px,1fr)); gap: 14px; }
+.pg { display: flex; flex-direction: column; gap: 7px; }
+.pg-lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .14em; color: var(--dim); padding-bottom: 5px; border-bottom: 1px solid var(--bdr); }
+.pg-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.pg-btns.one { grid-template-columns: 1fr; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  padding: 7px 10px; background: #12131a; border: 1px solid #20222c;
+  border-radius: 7px; color: #777; font-size: 11px; font-weight: 500;
+  cursor: pointer; transition: background .1s, border-color .1s, color .1s; user-select: none;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.btn:hover { background: #1a1b24; border-color: #36384a; color: #bbb; }
+.btn.aw   { background: #1e1407; border-color: #a05a18; color: #ffaa50; }
+.btn.ag   { background: #0c0c1f; border-color: #3a3aaa; color: #9090f0; }
+.btn.aa   { background: #07131d; border-color: #1e5a9a; color: #60aaee; }
+.btn.aa2  { background: #180900; border-color: #8a3818; color: #ffaa60; }
+.btn.aa3  { background: #0d0318; border-color: #6018b0; color: #cc60ff; }
+.btn.abl  { background: #1e1200; border-color: #c06800; color: #ffaa30; }
+.btn.abr  { background: #1e1200; border-color: #c06800; color: #ffaa30; }
+.btn.ac   { background: #0d0818; border-color: #5a2aaa; color: #c080ff; }
+.btn.arb  { background: #0e1a0a; border-color: #2a7a20; color: #70e060; }
+.btn.arb2 { background: #160400; border-color: #903010; color: #ff7030; }
+.btn.arb3 { background: #00101a; border-color: #006090; color: #18b0f0; }
+.btn.ao   { background: #111116; border-color: #2a2a30; color: #444; }
+.btn.ard  { background: #170000; border-color: #880000; color: #ff3020; }
+.btn.seq  { background: #0c0d14; border-color: #1e2030; color: #6a70a0; }
+.btn.seq:hover { background: #13152a; border-color: #303458; color: #9aa0d0; }
+
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 14px; }
+@media(max-width:600px){ .g3 { grid-template-columns: 1fr 1fr; } }
+.set label { display: flex; justify-content: space-between; font-size: 11px; color: var(--dim); margin-bottom: 6px; }
+.set label span { color: #7a8096; }
+input[type=range] { -webkit-appearance:none; width:100%; height:4px; background:#1c1e28; border-radius:2px; outline:none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; background:var(--acc); border-radius:50%; cursor:pointer; }
+.clrs { display: flex; flex-wrap: wrap; gap: 16px; }
+.ci { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--dim); }
+.ci input[type=color] { width:30px; height:24px; border:1px solid #222230; border-radius:5px; background:none; padding:2px; cursor:pointer; }
+.st { display:flex; align-items:center; gap:10px; padding:9px 14px; background:#090a0e; border:1px solid var(--bdr); border-radius:8px; margin-top:14px; }
+.dot { width:7px; height:7px; border-radius:50%; background:#1e2030; flex-shrink:0; transition:background .3s,box-shadow .3s; }
+.dot.p { background:#44ee88; box-shadow:0 0 8px #44ee88; animation:bk 1.2s infinite; }
+.dot.l { background:var(--acc); box-shadow:0 0 8px var(--acc); }
+.dot.b { background:#ff8800; box-shadow:0 0 8px #ff8800; animation:bk .36s infinite; }
+@keyframes bk { 0%,100%{opacity:1} 50%{opacity:.2} }
+#stTxt { font-size:12px; color:#6a7090; }
+#stTxt strong { color:#a8b0cc; font-weight:500; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Tesla Dash LED Simulator</h1>
+  <p>2023 Model 3 Highland &nbsp;·&nbsp; 100 × WS2812B &nbsp;·&nbsp; Diffused Channel Strip</p>
+</header>
+
+<div class="card scard">
+  <div class="smeta">
+    <span>LED 0 — LEFT EDGE</span>
+    <span>← Seg 0 (0–49, rev) &nbsp;|&nbsp; Seg 1 (50–99) →</span>
+    <span>LED 99 — RIGHT EDGE</span>
+  </div>
+  <canvas id="cv"></canvas>
+</div>
+
+<div class="card ctrl">
+
+  <div class="sec">
+    <div class="lbl">Presets</div>
+    <div class="pg-wrap">
+
+      <div class="pg">
+        <div class="pg-lbl">Wake</div>
+        <div class="pg-btns">
+          <button class="btn" id="bW"   onclick="go('wake')">↓ Ignition</button>
+          <button class="btn" id="bW2"  onclick="go('wake2')">↓ Neural</button>
+          <button class="btn" id="bW3"  onclick="go('wake3')">↓ Flare</button>
+          <button class="btn" id="bW4"  onclick="go('wake4')">↓ Red Alert</button>
+        </div>
+      </div>
+
+      <div class="pg">
+        <div class="pg-lbl">Goodbye</div>
+        <div class="pg-btns">
+          <button class="btn" id="bG"   onclick="go('goodbye')">↑ Exhale</button>
+          <button class="btn" id="bG2"  onclick="go('goodbye2')">↑ Dissolve</button>
+          <button class="btn" id="bG3"  onclick="go('goodbye3')">↑ Curtain</button>
+          <button class="btn" id="bG4"  onclick="go('goodbye4')">↑ Code Red</button>
+        </div>
+      </div>
+
+      <div class="pg">
+        <div class="pg-lbl">Ambient</div>
+        <div class="pg-btns">
+          <button class="btn" id="bA"   onclick="go('ambient')">◉ Aurora</button>
+          <button class="btn" id="bA2"  onclick="go('ambient2')">◉ Lava</button>
+          <button class="btn" id="bA3"  onclick="go('ambient3')">◉ Plasma</button>
+          <button class="btn" id="bA4"  onclick="go('ambient4')">◉ Threat</button>
+        </div>
+      </div>
+
+      <div class="pg">
+        <div class="pg-lbl">BSM Left</div>
+        <div class="pg-btns">
+          <button class="btn" id="bBL"  onclick="go('bsml')">◁ Beat</button>
+          <button class="btn" id="bBL2" onclick="go('bsml2')">◁ Rapid</button>
+          <button class="btn" id="bBL3" onclick="go('bsml3')">◁ Chase</button>
+          <button class="btn" id="bBL4" onclick="go('bsml4')">◁ Critical</button>
+        </div>
+      </div>
+
+      <div class="pg">
+        <div class="pg-lbl">BSM Right</div>
+        <div class="pg-btns">
+          <button class="btn" id="bBR"  onclick="go('bsmr')">▷ Beat</button>
+          <button class="btn" id="bBR2" onclick="go('bsmr2')">▷ Rapid</button>
+          <button class="btn" id="bBR3" onclick="go('bsmr3')">▷ Chase</button>
+          <button class="btn" id="bBR4" onclick="go('bsmr4')">▷ Critical</button>
+        </div>
+      </div>
+
+      <div class="pg">
+        <div class="pg-lbl">Cylon</div>
+        <div class="pg-btns">
+          <button class="btn" id="bCy"  onclick="go('cylon')">⟺ Scanner</button>
+          <button class="btn" id="bCy2" onclick="go('cylon2')">⟺ Ice</button>
+          <button class="btn" id="bCy3" onclick="go('cylon3')">⟺ Dual</button>
+          <button class="btn" id="bCy4" onclick="go('cylon4')">⟺ T-800</button>
+        </div>
+      </div>
+
+      <div class="pg">
+        <div class="pg-lbl">Spectrum</div>
+        <div class="pg-btns">
+          <button class="btn" id="bRb"  onclick="go('rainbow')">◈ Rainbow</button>
+          <button class="btn" id="bRb2" onclick="go('rainbow2')">◈ Inferno</button>
+          <button class="btn" id="bRb3" onclick="go('rainbow3')">◈ Neon</button>
+          <button class="btn" id="bRb4" onclick="go('rainbow4')">◈ Crimson</button>
+        </div>
+      </div>
+
+      <div class="pg">
+        <div class="pg-lbl">System</div>
+        <div class="pg-btns one">
+          <button class="btn" id="bO"   onclick="go('off')">✕ Off</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="dv">
+
+  <div class="sec">
+    <div class="lbl">Sequences</div>
+    <div class="row">
+      <button class="btn seq" onclick="seq('entry')">▶ Entry <small style="opacity:.5">Wake → Ambient</small></button>
+      <button class="btn seq" onclick="seq('exit')">▶ Exit <small style="opacity:.5">Ambient → Goodbye → Off</small></button>
+      <button class="btn seq" onclick="seq('bsm')">▶ BSM Demo</button>
+    </div>
+  </div>
+
+  <hr class="dv">
+
+  <div class="sec">
+    <div class="lbl">Settings</div>
+    <div class="g3">
+      <div class="set">
+        <label>Speed <span id="vS">1.00×</span></label>
+        <input type="range" min="20" max="300" value="100"
+          oninput="S.speed=this.value/100;id('vS').textContent=S.speed.toFixed(2)+'×'">
+      </div>
+      <div class="set">
+        <label>Brightness <span id="vB">78%</span></label>
+        <input type="range" min="5" max="100" value="78"
+          oninput="S.bri=this.value/100;id('vB').textContent=this.value+'%'">
+      </div>
+      <div class="set">
+        <label>Tail <span id="vT">14 px</span></label>
+        <input type="range" min="3" max="40" value="14"
+          oninput="S.tail=+this.value;id('vT').textContent=this.value+' px'">
+      </div>
+    </div>
+    <div class="clrs">
+      <div class="ci"><input type="color" value="#ffa020" oninput="S.cW=h2r(this.value)"> Wake</div>
+      <div class="ci"><input type="color" value="#0078ff" oninput="S.cA=h2r(this.value)"> Ambient</div>
+      <div class="ci"><input type="color" value="#5050ff" oninput="S.cG=h2r(this.value)"> Goodbye</div>
+      <div class="ci"><input type="color" value="#ff8800" oninput="S.cB=h2r(this.value)"> BSM</div>
+    </div>
+  </div>
+
+  <div class="st">
+    <div class="dot" id="dot"></div>
+    <span id="stTxt">Ready — click a preset to preview</span>
+  </div>
+</div>
+
+<script>
+// ─── constants & state ───────────────────────────────────────────────────────
+const N = 100, HALF = 50;
+let leds = Array.from({length:N}, ()=>[0,0,0]);
+
+const S = {
+  speed:1, bri:0.78, tail:14,
+  cW:h2r('#ffa020'), cA:h2r('#0078ff'),
+  cG:h2r('#5050ff'), cB:h2r('#ff8800'),
+};
+
+let preset='off', t0=0;
+let snap=null, snapT0=0;
+const BLEND=360;
+let seqQ=[], seqTmr=null;
+let sparkles=[];
+
+// ─── color math ──────────────────────────────────────────────────────────────
+function h2r(hex){ return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)]; }
+function id(s){ return document.getElementById(s); }
+function cl(v){ return Math.max(0,Math.min(255,Math.round(v))); }
+function sc(c,f){ return [c[0]*f, c[1]*f, c[2]*f]; }
+function add(a,b){ return [Math.min(255,a[0]+b[0]),Math.min(255,a[1]+b[1]),Math.min(255,a[2]+b[2])]; }
+function lerp(a,b,t){ return a+(b-a)*t; }
+function lc(a,b,t){ return [lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)]; }
+function setL(i,c){ leds[i]=[cl(c[0]),cl(c[1]),cl(c[2])]; }
+
+function hsl(h,s,l){
+  h=((h%360)+360)%360; s=Math.max(0,Math.min(1,s)); l=Math.max(0,Math.min(1,l));
+  const c2=(1-Math.abs(2*l-1))*s, x=c2*(1-Math.abs(h/60%2-1)), m=l-c2/2;
+  let r,g,b;
+  if      (h<60)  [r,g,b]=[c2,x,0];
+  else if (h<120) [r,g,b]=[x,c2,0];
+  else if (h<180) [r,g,b]=[0,c2,x];
+  else if (h<240) [r,g,b]=[0,x,c2];
+  else if (h<300) [r,g,b]=[x,0,c2];
+  else            [r,g,b]=[c2,0,x];
+  return [Math.round((r+m)*255),Math.round((g+m)*255),Math.round((b+m)*255)];
+}
+
+function hueShift(rgb,deg){
+  const r=rgb[0]/255,g=rgb[1]/255,b=rgb[2]/255;
+  const max=Math.max(r,g,b),min=Math.min(r,g,b);
+  const l=(max+min)/2;
+  if(max===min) return rgb;
+  const d=max-min;
+  const s=l>0.5?d/(2-max-min):d/(max+min);
+  let h;
+  if(max===r)      h=((g-b)/d+(g<b?6:0))*60;
+  else if(max===g) h=((b-r)/d+2)*60;
+  else             h=((r-g)/d+4)*60;
+  return hsl(h+deg,s,l);
+}
+
+// ─── WAKE animations ─────────────────────────────────────────────────────────
+
+function fOff(){ for(let i=0;i<N;i++) leds[i]=[0,0,0]; return true; }
+
+// Wake 1 — Ignition: dual-pulse warm amber
+function fWake(el){
+  const dur=2800/S.speed, p=Math.min(1,el/dur);
+  for(let i=0;i<N;i++) leds[i]=[0,0,0];
+
+  if(p < 0.09){
+    const tp=p/0.09;
+    const flash=Math.pow(tp,0.35)*Math.exp(-Math.pow(tp-0.55,2)*6);
+    for(let i=0;i<N;i++){
+      const x=Math.abs(i-49.5)/HALF;
+      setL(i,sc([255,245,190],flash*S.bri*Math.exp(-x*x*9)));
+    }
+    return false;
+  }
+
+  const p2=(p-0.09)/0.91;
+  const hA=p2*1.55*(HALF+12);
+  const hB=Math.max(0,(p2-0.18)/0.82)*(HALF+S.tail+6);
+
+  for(let i=0;i<HALF;i++){
+    let rgb=[0,0,0];
+    const dB=hB-i;
+    if(dB>0 && dB<=S.tail+3){
+      const t=Math.min(1,dB/(S.tail+3));
+      let col;
+      if     (t<0.18) col=lc([255,235,170],S.cW,t/0.18);
+      else if(t<0.6)  col=lc(S.cW,[255,85,8],(t-0.18)/0.42);
+      else            col=sc([220,55,0],(1-t)/0.4);
+      rgb=add(rgb,sc(col,S.bri*1.1*Math.pow(1-t,1.6)));
+    } else if(dB>S.tail+3){
+      rgb=add(rgb,sc(S.cW,S.bri*Math.min(1,(dB-S.tail-3)/7)*0.18));
+    }
+    const dA=hA-i;
+    if(dA>0 && dA<9){
+      const t=dA/9;
+      rgb=add(rgb,sc(lc([255,255,250],[160,200,255],t),S.bri*1.4*Math.pow(1-t,2.2)));
+    }
+    setL(49-i,rgb);
+    setL(50+i,[...rgb]);
+  }
+  return p>=1;
+}
+
+// Wake 2 — Neural Spark: three staggered electric-blue pulses from center
+function fWake2(el){
+  const dur=2400/S.speed, p=Math.min(1,el/dur);
+  for(let i=0;i<N;i++) leds[i]=[0,0,0];
+
+  if(p<0.07){
+    const tp=p/0.07;
+    const flash=Math.sin(tp*Math.PI)*1.2;
+    for(let i=0;i<N;i++){
+      const x=Math.abs(i-49.5)/HALF;
+      setL(i,sc([120,220,255],flash*S.bri*Math.exp(-x*x*14)));
+    }
+    return false;
+  }
+
+  const p2=(p-0.07)/0.93;
+  const pulses=[
+    {d:0,    v:1.8,  w:6,  col:[240,255,255]},
+    {d:0.09, v:1.25, w:11, col:[60,160,255]},
+    {d:0.22, v:0.85, w:17, col:[20,70,200]},
+  ];
+
+  for(const pulse of pulses){
+    const pp=Math.max(0,(p2-pulse.d)/(1-pulse.d));
+    const head=pp*pulse.v*(HALF+pulse.w+6);
+    for(let i=0;i<HALF;i++){
+      const d=head-i;
+      if(d>0 && d<=pulse.w){
+        const t=d/pulse.w;
+        const b=S.bri*1.1*Math.pow(1-t,1.7)*(1-p2*0.55);
+        setL(49-i,add(leds[49-i],sc(pulse.col,b)));
+        setL(50+i, add(leds[50+i], sc(pulse.col,b)));
+      }
+    }
+  }
+
+  // Electric jitter sparks along the advancing front
+  if(p2>0.04 && p2<0.75 && Math.random()<0.38){
+    const r=Math.floor(Math.random()*HALF*Math.min(1,p2*2.2));
+    const j=S.bri*0.9*(0.75-p2);
+    setL(49-r,add(leds[49-r],sc([200,245,255],j)));
+    setL(50+r, add(leds[50+r], sc([200,245,255],j)));
+  }
+
+  return p>=1;
+}
+
+// Wake 3 — Solar Flare: white-hot core → expanding warm corona
+function fWake3(el){
+  const dur=3000/S.speed, p=Math.min(1,el/dur);
+  for(let i=0;i<N;i++) leds[i]=[0,0,0];
+
+  if(p<0.10){
+    const tp=p/0.10;
+    const flash=Math.sin(tp*Math.PI);
+    for(let i=0;i<N;i++){
+      const x=Math.abs(i-49.5)/HALF;
+      const col=lc([255,255,230],[255,200,80],Math.pow(x,0.4));
+      setL(i,sc(col,flash*S.bri*1.2*Math.exp(-x*x*7)));
+    }
+    return false;
+  }
+
+  const p2=(p-0.10)/0.90;
+  const head=p2*(HALF+S.tail+12);
+
+  for(let i=0;i<HALF;i++){
+    const d=head-i;
+    let b=0;
+    if(d>0 && d<1.8)             b=S.bri*1.35;
+    else if(d>=1.8 && d<S.tail+8){
+      const t=(d-1.8)/(S.tail+8-1.8);
+      b=S.bri*(1-p2*0.65)*Math.pow(1-t,1.5);
+    } else if(d>=S.tail+8){
+      b=S.bri*Math.max(0,1-(d-S.tail-8)/8)*0.18*(1-p2);
+    }
+    const distF=Math.min(1,i/(HALF*0.85));
+    const tailF=d>0?Math.min(1,d/(S.tail+8)):0;
+    const col=lc(lc([255,245,200],[255,130,20],distF),[190,50,0],tailF*0.6);
+    setL(49-i,sc(col,b));
+    setL(50+i, sc(col,b));
+  }
+  return p>=1;
+}
+
+// Wake 4 — Red Alert: outbound orbs -> reversal with solid tail -> convergence burst -> threat ambient
+function fWake4(el){
+  const dur=5000/S.speed, p=Math.min(1,el/dur);
+  for(let i=0;i<N;i++) leds[i]=[0,0,0];
+
+  const RED=[255,18,0], BRIGHT=[255,75,25];
+  const sigma=6, s4=sigma*sigma*sigma*sigma;
+
+  // Phase 1 (0-0.32): outbound orbs, center to edges, no trail
+  if(p < 0.32){
+    const head=(p/0.32)*49;
+    for(let i=0;i<HALF;i++){
+      const d=i-head;
+      const b=S.bri*1.45*Math.exp(-(d*d*d*d)/s4);
+      if(b<0.01) continue;
+      const col=lc(BRIGHT,RED,Math.pow(Math.min(1,Math.abs(d)/sigma),0.65));
+      setL(49-i,sc(col,b)); setL(50+i,sc(col,b));
+    }
+    return false;
+  }
+
+  // Phase 2 (0.32-0.39): edge bloom before reversal
+  if(p < 0.39){
+    const bloom=Math.sin((p-0.32)/0.07*Math.PI);
+    for(let i=HALF-11;i<HALF;i++){
+      const f=(i-(HALF-11))/10;
+      const b=S.bri*bloom*(0.08+0.92*Math.pow(f,1.6));
+      setL(49-i,sc(RED,b)); setL(50+i,sc(RED,b));
+    }
+    return false;
+  }
+
+  // Phase 3 (0.39-0.71): return sweep with solid tail, edges toward center
+  if(p < 0.71){
+    const p3=(p-0.39)/0.32;
+    const head=49*(1-p3);
+    for(let i=0;i<HALF;i++){
+      const dBehind=i-head;
+      const trailB=dBehind>0 ? S.bri*(0.70+0.08*Math.exp(-(49-i)*0.08)) : 0;
+      const orbB=S.bri*1.45*Math.exp(-(dBehind*dBehind*dBehind*dBehind)/s4);
+      const b=Math.max(orbB,trailB);
+      if(b<0.01) continue;
+      const col=orbB>trailB
+        ? lc(BRIGHT,RED,Math.pow(Math.min(1,Math.abs(dBehind)/sigma),0.65))
+        : RED;
+      setL(49-i,sc(col,b)); setL(50+i,sc(col,b));
+    }
+    return false;
+  }
+
+  // Phase 4 (0.71-1.00): convergence burst -> dissolve into threat ambient
+  const p4=(p-0.71)/0.29;
+
+  // 4a: solid trails linger then die quickly as burst fires
+  const trailFade=Math.max(0,1-p4/0.09);
+  if(trailFade>0.01){
+    for(let i=0;i<HALF;i++){
+      setL(49-i,sc(RED,S.bri*0.70*trailFade));
+      setL(50+i, sc(RED,S.bri*0.70*trailFade));
+    }
+  }
+
+  // 4b: center collision flash — hot white-red burst at impact point
+  const impactF=p4<0.22 ? Math.sin(p4/0.22*Math.PI) : 0;
+  if(impactF>0.01){
+    for(let i=0;i<N;i++){
+      const x=Math.abs(i-49.5)/HALF;
+      const b=impactF*S.bri*1.7*Math.exp(-x*x*11);
+      setL(i,add(leds[i],sc(lc([255,150,60],[255,20,0],Math.pow(x,0.4)),b)));
+    }
+  }
+
+  // 4c: burst ring expands outward from center, fading as it reaches edges
+  if(p4>0.07){
+    const pp=Math.min(1,(p4-0.07)/0.66);
+    const ringPos=pp*55;
+    const ringFade=Math.pow(1-pp,0.68);
+    const sig2=5.5, s4b=sig2*sig2*sig2*sig2;
+    for(let i=0;i<HALF;i++){
+      const d=i-ringPos;
+      const b=S.bri*1.4*ringFade*Math.exp(-(d*d*d*d)/s4b);
+      if(b<0.01) continue;
+      const col=lc([255,80,20],[255,20,0],Math.min(1,Math.abs(d)/sig2));
+      setL(49-i,add(leds[49-i],sc(col,b)));
+      setL(50+i, add(leds[50+i], sc(col,b)));
+    }
+  }
+
+  // 4d: threat-level ambient breathes up as burst fades — seamless handoff
+  if(p4>0.38){
+    const settle=Math.pow((p4-0.38)/0.62,1.4);
+    for(let i=0;i<N;i++){
+      const x=i/(N-1);
+      const wave=0.5+0.5*Math.sin(x*Math.PI*3.6);
+      const b=S.bri*0.30*settle*(0.18+0.82*wave);
+      setL(i,add(leds[i],sc([165,10,0],b)));
+    }
+  }
+
+  return p>=1;
+}
+
+// ─── GOODBYE animations ───────────────────────────────────────────────────────
+
+// Goodbye 1 — Exhale: inhale breathe → dual edge-inward converge → center ember
+function fGoodbye(el){
+  const dur=3200/S.speed, p=Math.min(1,el/dur);
+  for(let i=0;i<N;i++) leds[i]=[0,0,0];
+
+  if(p<0.17){
+    const tp=p/0.17;
+    const pulse=Math.sin(tp*Math.PI)*0.35+0.75;
+    for(let i=0;i<N;i++) setL(i,sc(S.cG,S.bri*pulse));
+    return false;
+  }
+
+  if(p<0.76){
+    const p2=(p-0.17)/0.59;
+    const head=p2*(HALF+S.tail+6);
+    const fade=Math.pow(1-p2*0.88,0.48);
+    for(let i=0;i<HALF;i++){
+      const d=head-i;
+      let b;
+      if      (d<=0)     b=S.bri*0.75*fade;
+      else if (d<1)      b=S.bri*1.1*fade;
+      else if (d<S.tail) b=S.bri*Math.pow(1-(d-1)/(S.tail-1),1.9)*fade;
+      else               b=0;
+      const c=sc(S.cG,b);
+      setL(i,c); setL(99-i,[...c]);
+    }
+    return false;
+  }
+
+  const p3=(p-0.76)/0.24;
+  const span=12;
+  for(let i=HALF-span;i<HALF+span;i++){
+    const x=Math.abs(i-49.5)/span;
+    setL(i,sc(S.cG,S.bri*(1-p3)*Math.pow(1-x*x,1.8)*0.9));
+  }
+  return p>=1;
+}
+
+// Goodbye 2 — Dissolve: staggered per-LED fadeout, edges die first
+function fGoodbye2(el){
+  const dur=2600/S.speed, p=Math.min(1,el/dur);
+  for(let i=0;i<N;i++){
+    const distFromEdge=Math.min(i,N-1-i)/(HALF-1);
+    const hash=Math.abs(Math.sin(i*127.1+31.4)*43758.5453)%1;
+    const startT=distFromEdge*0.52+hash*0.16;
+    const localP=Math.max(0,Math.min(1,(p-startT)/Math.max(0.08,1-startT)));
+    setL(i,sc(S.cG,S.bri*Math.pow(1-localP,1.9)));
+  }
+  return p>=1;
+}
+
+// Goodbye 3 — Curtain: crisp dark edge sweeps from each outer edge inward
+function fGoodbye3(el){
+  const dur=2000/S.speed, p=Math.min(1,el/dur);
+  for(let i=0;i<N;i++) leds[i]=[0,0,0];
+
+  if(p<0.08){
+    for(let i=0;i<N;i++) setL(i,sc(S.cG,S.bri));
+    return false;
+  }
+
+  const p2=(p-0.08)/0.92;
+  const darkEdge=p2*(HALF+2);
+
+  for(let i=0;i<HALF;i++){
+    // Left half: i=0 is left edge, i=49 is center side
+    if(i>=darkEdge){
+      const edgeDist=i-darkEdge;
+      const glow=edgeDist<4?1+0.5*(1-edgeDist/4):1;
+      setL(i,  sc(S.cG,S.bri*Math.min(1.5,glow)));
+    }
+    // Right half: i=0 is right edge (LED99), i=49 is center side (LED50)
+    const ri=N-1-i;
+    if(i>=darkEdge){
+      const edgeDist=i-darkEdge;
+      const glow=edgeDist<4?1+0.5*(1-edgeDist/4):1;
+      setL(ri, sc(S.cG,S.bri*Math.min(1.5,glow)));
+    }
+  }
+  return p>=1;
+}
+
+// Goodbye 4 — Code Red: triple strobe → drain from edges inward → center pulse → out
+function fGoodbye4(el){
+  const dur=3200/S.speed, p=Math.min(1,el/dur);
+  for(let i=0;i<N;i++) leds[i]=[0,0,0];
+  const RED=[255,22,0];
+
+  if(p<0.15){
+    const strobe=Math.pow(Math.max(0,Math.sin(p/0.15*Math.PI*3)),4);
+    for(let i=0;i<N;i++) setL(i,sc(RED,strobe*S.bri));
+    return false;
+  }
+
+  if(p<0.72){
+    const p2=(p-0.15)/0.57;
+    const darkEdge=p2*HALF;
+    for(let i=0;i<HALF;i++){
+      if(i>=darkEdge){
+        const edgeDist=i-darkEdge;
+        const glow=edgeDist<3?1+0.5*(1-edgeDist/3):1;
+        setL(i,    sc(RED,S.bri*glow*(1-p2*0.28)));
+      }
+    }
+    for(let j=HALF;j<N;j++){
+      const distFromRight=N-1-j;
+      if(distFromRight>=darkEdge){
+        const edgeDist=distFromRight-darkEdge;
+        const glow=edgeDist<3?1+0.5*(1-edgeDist/3):1;
+        setL(j,    sc(RED,S.bri*glow*(1-p2*0.28)));
+      }
+    }
+    return false;
+  }
+
+  if(p<0.90){
+    const p3=(p-0.72)/0.18;
+    const pulse=0.7+0.5*Math.sin(p3*Math.PI*4.5);
+    for(let i=HALF-9;i<HALF+9;i++){
+      const x=Math.abs(i-49.5)/9;
+      setL(i,sc(RED,S.bri*pulse*Math.pow(1-x*x,1.6)));
+    }
+    return false;
+  }
+
+  const p4=(p-0.90)/0.10;
+  for(let i=HALF-9;i<HALF+9;i++){
+    const x=Math.abs(i-49.5)/9;
+    setL(i,sc(RED,S.bri*(1-p4)*Math.pow(1-x*x,1.6)));
+  }
+  return p>=1;
+}
+
+// ─── AMBIENT animations ───────────────────────────────────────────────────────
+
+// Ambient 1 — Aurora: layered sine waves + hue drift + sparkle
+function fAmbient(el){
+  const t=el*0.001;
+  for(let i=0;i<N;i++){
+    const x=i/(N-1);
+    const w1=0.5+0.5*Math.sin(x*Math.PI*4   - t*0.40*S.speed);
+    const w2=0.5+0.5*Math.sin(x*Math.PI*9   - t*0.95*S.speed + 1.3);
+    const w3=0.5+0.5*Math.sin(x*Math.PI*1.4 - t*0.18*S.speed);
+    const wave=w1*0.42+w2*0.35+w3*0.23;
+    const breathe=0.72+0.28*Math.sin(t*0.38*S.speed);
+    const hShift=Math.sin(x*5+t*0.25*S.speed)*18;
+    const [hr,hg,hb]=hueShift(S.cA,hShift);
+    const bri=S.bri*breathe*(0.18+0.82*wave);
+    setL(i,[hr*bri,hg*bri,hb*bri]);
+  }
+  const now=performance.now();
+  sparkles=sparkles.filter(s=>now-s.t<s.d);
+  if(Math.random()<0.045){
+    sparkles.push({i:Math.floor(Math.random()*N),t:now,d:160+Math.random()*180,v:0.35+Math.random()*0.45});
+  }
+  for(const s of sparkles){
+    const tp=(now-s.t)/s.d;
+    const bri=s.v*Math.sin(tp*Math.PI);
+    const l=leds[s.i];
+    setL(s.i,[l[0]+200*bri,l[1]+200*bri,l[2]+200*bri]);
+  }
+  return false;
+}
+
+// Ambient 2 — Lava: slow rolling warm orange/red/yellow blobs
+function fAmbient2(el){
+  const t=el*0.001*S.speed;
+  for(let i=0;i<N;i++){
+    const x=i/(N-1);
+    const b1=0.5+0.5*Math.sin(x*Math.PI*2.2 - t*0.14);
+    const b2=0.5+0.5*Math.sin(x*Math.PI*3.8 - t*0.21 + 1.9);
+    const b3=0.5+0.5*Math.sin(x*Math.PI*1.1 - t*0.08 + 0.6);
+    const intensity=b1*0.45+b2*0.35+b3*0.20;
+    let col;
+    if(intensity<0.32)      col=lc([70,4,0],[200,28,0],intensity/0.32);
+    else if(intensity<0.62) col=lc([200,28,0],[255,100,8],(intensity-0.32)/0.30);
+    else                    col=lc([255,100,8],[255,210,40],(intensity-0.62)/0.38);
+    const breathe=0.68+0.32*Math.sin(t*0.27);
+    setL(i,sc(col,S.bri*breathe*(0.22+0.78*intensity)));
+  }
+  return false;
+}
+
+// Ambient 3 — Plasma: fast cyberpunk multi-color plasma formula
+function fAmbient3(el){
+  const t=el*0.001*S.speed;
+  for(let i=0;i<N;i++){
+    const x=i/(N-1);
+    const v1=Math.sin(x*8    - t*2.1);
+    const v2=Math.sin(x*3.2  + t*1.65 + 2.0);
+    const v3=Math.sin((x+t*0.48)*6.4);
+    const plasma=(v1+v2+v3)/3;
+    const hue=((plasma+1)*180+t*28)%360;
+    const breathe=0.70+0.30*Math.sin(t*1.45);
+    setL(i,sc(hsl(hue,1.0,0.52),S.bri*breathe));
+  }
+  return false;
+}
+
+// Ambient 4 — Threat Level: deep pulsing red, ominous military feel
+function fAmbient4(el){
+  const t=el*0.001*S.speed;
+  for(let i=0;i<N;i++){
+    const x=i/(N-1);
+    const wave=0.5+0.5*Math.sin(x*Math.PI*3.6 - t*0.44);
+    const centerPulse=Math.exp(-Math.pow(x-0.5,2)*5)*Math.max(0,Math.sin(t*0.72+0.4));
+    const breathe=0.55+0.45*Math.sin(t*0.33);
+    const intensity=wave*0.52+centerPulse*0.32+0.16;
+    const col=lc([110,0,0],[255,22,0],Math.pow(intensity,0.85));
+    setL(i,sc(col,S.bri*breathe*(0.18+0.82*Math.pow(intensity,1.15))));
+  }
+  return false;
+}
+
+// ─── BSM animations ──────────────────────────────────────────────────────────
+
+// BSM 1 — Beat: classic heartbeat double-flash amber
+function fBsm(el,side){
+  const cycle=780/S.speed;
+  const pos=el%cycle;
+  const p1s=0,   p1e=110/S.speed;
+  const p2s=200/S.speed, p2e=340/S.speed;
+  let flash=0;
+  if(pos>=p1s&&pos<p1e){
+    flash=Math.sin((pos-p1s)/(p1e-p1s)*Math.PI);
+  } else if(pos>=p2s&&pos<p2e){
+    flash=Math.sin((pos-p2s)/(p2e-p2s)*Math.PI)*0.78;
+  }
+
+  const d=sc(S.cA,S.bri*0.07);
+  const [fa,fb]=side==='l'?[[0,49],[50,99]]:[[50,99],[0,49]];
+  for(let i=fa[0];i<=fa[1];i++){
+    const x=side==='l'?(fa[1]-i)/49:(i-fa[0])/49;
+    setL(i,sc(S.cB,(flash*0.92+0.06)*S.bri*(1+0.25*x*flash)));
+  }
+  for(let i=fb[0];i<=fb[1];i++) setL(i,d);
+  return false;
+}
+
+// BSM 2 — Rapid: fast double-tap flash, much quicker than beat
+function fBsm2(el,side){
+  const cycle=280/S.speed;
+  const pos=el%cycle;
+  const p1e=60/S.speed;
+  const p2s=90/S.speed, p2e=155/S.speed;
+  let flash=0;
+  if(pos<p1e)              flash=Math.sin(pos/p1e*Math.PI)*1.1;
+  else if(pos>=p2s&&pos<p2e) flash=Math.sin((pos-p2s)/(p2e-p2s)*Math.PI)*0.88;
+
+  const c=sc(S.cB,(flash*0.9+0.05)*S.bri);
+  const d=sc(S.cA,S.bri*0.06);
+  const [fa,fb]=side==='l'?[[0,49],[50,99]]:[[50,99],[0,49]];
+  for(let i=fa[0];i<=fa[1];i++) setL(i,c);
+  for(let i=fb[0];i<=fb[1];i++) setL(i,d);
+  return false;
+}
+
+// BSM 3 — Chase: amber comet sweeping from outer edge toward center, looping
+function fBsm3(el,side){
+  const cycleDur=600/S.speed;
+  const pos=el%cycleDur;
+  const pp=pos/cycleDur;
+  const head=pp*(HALF+S.tail+4);
+
+  const d=sc(S.cB,S.bri*0.05);
+  const [fa,fb]=side==='l'?[[0,49],[50,99]]:[[50,99],[0,49]];
+  for(let i=fb[0];i<=fb[1];i++) setL(i,d);
+
+  for(let i=0;i<HALF;i++){
+    const dist=head-i;
+    let b=0;
+    if(dist>0&&dist<1.5)         b=S.bri*1.12;
+    else if(dist>=1.5&&dist<S.tail+2) b=S.bri*Math.pow(1-(dist-1.5)/(S.tail+0.5),1.8);
+    const t=Math.min(1,dist/S.tail);
+    const col=lc(S.cB,[255,190,0],Math.min(1,t*0.4));
+    if(side==='l') setL(fa[0]+i,   sc(col,b));
+    else           setL(fa[1]-i,   sc(col,b));
+  }
+  return false;
+}
+
+// BSM 4 — Critical: urgent triple-beat red alert
+function fBsm4(el,side){
+  const cycle=500/S.speed;
+  const pos=el%cycle;
+  const p1e=80/S.speed;
+  const p2s=120/S.speed, p2e=200/S.speed;
+  const p3s=250/S.speed, p3e=350/S.speed;
+  let flash=0;
+  if(pos<p1e)               flash=Math.sin(pos/p1e*Math.PI);
+  else if(pos>=p2s&&pos<p2e)  flash=Math.sin((pos-p2s)/(p2e-p2s)*Math.PI)*0.85;
+  else if(pos>=p3s&&pos<p3e)  flash=Math.sin((pos-p3s)/(p3e-p3s)*Math.PI)*0.65;
+
+  const RED=[255,22,0];
+  const dimRed=sc([40,0,0],S.bri*0.08);
+  const [fa,fb]=side==='l'?[[0,49],[50,99]]:[[50,99],[0,49]];
+  for(let i=fa[0];i<=fa[1];i++){
+    const x=side==='l'?(fa[1]-i)/49:(i-fa[0])/49;
+    setL(i,sc(RED,(flash*0.94+0.04)*S.bri*(1+0.3*x*flash)));
+  }
+  for(let i=fb[0];i<=fb[1];i++) setL(i,dimRed);
+  return false;
+}
+
+// ─── CYLON animations ─────────────────────────────────────────────────────────
+
+// Cylon 1 — Scanner: warm white core → deep red/amber trail
+function fCylon(el){
+  const period=1600/S.speed;
+  const phase=(el%period)/period;
+  const eased=phase<0.5
+    ? 2*phase*phase*(3-2*phase)
+    : 1-2*(1-phase)*(1-phase)*(3-2*(1-phase));
+  const head=eased*(N-1);
+
+  for(let i=0;i<N;i++){
+    const d=Math.abs(i-head);
+    const tail=S.tail*1.4;
+    let b;
+    if     (d<1.5)   b=S.bri*1.2;
+    else if(d<tail)  b=S.bri*Math.pow(1-d/tail,1.6);
+    else             b=0;
+    const t=Math.min(1,d/tail);
+    setL(i,sc(lc([255,250,200],[180,20,0],Math.pow(t,0.7)),b));
+  }
+  return false;
+}
+
+// Cylon 2 — Ice: cool blue/cyan core → deep blue trail
+function fCylon2(el){
+  const period=1600/S.speed;
+  const phase=(el%period)/period;
+  const eased=phase<0.5
+    ? 2*phase*phase*(3-2*phase)
+    : 1-2*(1-phase)*(1-phase)*(3-2*(1-phase));
+  const head=eased*(N-1);
+
+  for(let i=0;i<N;i++){
+    const d=Math.abs(i-head);
+    const tail=S.tail*1.4;
+    let b;
+    if     (d<1.5)   b=S.bri*1.3;
+    else if(d<tail)  b=S.bri*Math.pow(1-d/tail,1.6);
+    else             b=0;
+    const t=Math.min(1,d/tail);
+    setL(i,sc(lc([230,255,255],[0,55,145],Math.pow(t,0.6)),b));
+  }
+  return false;
+}
+
+// Cylon 3 — Dual: two opposing comets (amber + blue) crossing
+function fCylon3(el){
+  const period=1400/S.speed;
+  const phase=(el%period)/period;
+  const ea=phase<0.5?2*phase*phase*(3-2*phase):1-2*(1-phase)*(1-phase)*(3-2*(1-phase));
+  const h1=ea*(N-1);
+  const h2=(1-ea)*(N-1);
+  const tail=S.tail*1.2;
+
+  for(let i=0;i<N;i++) leds[i]=[0,0,0];
+
+  for(let i=0;i<N;i++){
+    const d1=Math.abs(i-h1);
+    if(d1<tail){
+      const b=d1<1.5?S.bri*1.1:S.bri*Math.pow(1-d1/tail,1.8);
+      const c=lc([255,220,100],[175,70,0],Math.min(1,d1/tail));
+      setL(i,add(leds[i],sc(c,b)));
+    }
+    const d2=Math.abs(i-h2);
+    if(d2<tail){
+      const b=d2<1.5?S.bri*1.1:S.bri*Math.pow(1-d2/tail,1.8);
+      const c=lc([210,245,255],[0,75,175],Math.min(1,d2/tail));
+      setL(i,add(leds[i],sc(c,b)));
+    }
+  }
+  return false;
+}
+
+// Cylon 4 — T-800: slow blood red sweep, wide ominous trail with subtle pulse
+function fCylon4(el){
+  const period=2800/S.speed;
+  const phase=(el%period)/period;
+  const eased=phase<0.5
+    ? 2*phase*phase*(3-2*phase)
+    : 1-2*(1-phase)*(1-phase)*(3-2*(1-phase));
+  const head=eased*(N-1);
+  const trailPulse=0.86+0.14*Math.sin(el*0.001*2.3);
+
+  for(let i=0;i<N;i++){
+    const d=Math.abs(i-head);
+    const tail=S.tail*2.4;
+    let b;
+    if     (d<1.5)   b=S.bri*1.3;
+    else if(d<tail)  b=S.bri*Math.pow(1-d/tail,1.3)*trailPulse;
+    else             b=0;
+    const t=Math.min(1,d/tail);
+    setL(i,sc(lc([255,55,0],[75,0,0],Math.pow(t,0.5)),b));
+  }
+  return false;
+}
+
+// ─── SPECTRUM animations ──────────────────────────────────────────────────────
+
+// Spectrum 1 — Rainbow: hue wave drifting across strip
+function fRainbow(el){
+  const t=el*0.001;
+  for(let i=0;i<N;i++){
+    const x=i/(N-1);
+    const hue=((x-t*0.12*S.speed)*360+360)%360;
+    const breathe=0.65+0.35*Math.sin(t*1.1*S.speed+x*3.5);
+    setL(i,sc(hsl(hue,1,0.5),S.bri*breathe));
+  }
+  return false;
+}
+
+// Spectrum 2 — Inferno: turbulent fire in red/orange/yellow
+function fRainbow2(el){
+  const t=el*0.001*S.speed;
+  for(let i=0;i<N;i++){
+    const x=i/(N-1);
+    const flicker=Math.max(0,Math.min(1,
+      0.5+0.5*Math.sin(x*12-t*3.5)+Math.sin(x*7.2+t*2.3)*0.24+Math.sin(x*19-t*5.2)*0.11
+    ));
+    let col;
+    if(flicker<0.25)      col=lc([28,0,0],[185,18,0],flicker/0.25);
+    else if(flicker<0.55) col=lc([185,18,0],[255,95,0],(flicker-0.25)/0.30);
+    else                  col=lc([255,95,0],[255,230,25],(flicker-0.55)/0.45);
+    const breathe=0.68+0.32*Math.sin(t*0.88+x*2.1);
+    setL(i,sc(col,S.bri*breathe));
+  }
+  return false;
+}
+
+// Spectrum 3 — Neon City: full-hue wave with sharp neon burst overlay
+function fRainbow3(el){
+  const t=el*0.001*S.speed;
+  for(let i=0;i<N;i++){
+    const x=i/(N-1);
+    const baseHue=((x-t*0.16)*360+3600)%360;
+    const col=hsl(baseHue,1,0.52);
+    const burstHue=(baseHue+175)%360;
+    const burst=Math.pow(Math.max(0,Math.sin(x*6.5-t*4.2)),8);
+    const flash=hsl(burstHue,1,0.80);
+    const breathe=0.52+0.48*Math.sin(t*2.2+x*4.8);
+    setL(i,add(sc(col,S.bri*breathe),sc(flash,burst*S.bri*0.75)));
+  }
+  return false;
+}
+
+// Spectrum 4 — Crimson Tide: shifting red-spectrum only, deep crimson to orange-red
+function fRainbow4(el){
+  const t=el*0.001*S.speed;
+  for(let i=0;i<N;i++){
+    const x=i/(N-1);
+    const wave=(x*3-t*0.20+30)%3;
+    // Map to red-only hues: 330 (deep crimson) → 360/0 (pure red) → 22 (orange-red)
+    const hue=((wave/3)*52+330)%360;
+    const breathe=0.60+0.40*Math.sin(t*0.66+x*2.9);
+    const lum=0.38+0.12*Math.sin(t*1.1+x*5.1);
+    setL(i,sc(hsl(hue,1,lum),S.bri*breathe));
+  }
+  return false;
+}
+
+// ─── triggers ─────────────────────────────────────────────────────────────────
+function go(name,noBlend=false){
+  clearTimeout(seqTmr); seqQ=[];
+  _go(name,noBlend);
+}
+function _go(name,noBlend=false){
+  if(!noBlend&&preset!==name&&preset!=='off'){
+    snap=leds.map(c=>[...c]); snapT0=performance.now();
+  } else snap=null;
+  preset=name; t0=performance.now();
+  sparkles=[];
+  updateUI(name);
+}
+
+// ─── sequences ────────────────────────────────────────────────────────────────
+function seq(name){
+  const seqs={
+    entry:[{p:'wake',ms:2850/S.speed},{p:'ambient',ms:1/0}],
+    exit: [{p:'ambient',ms:900},{p:'goodbye',ms:3250/S.speed},{p:'off',ms:1/0}],
+    bsm:  [{p:'ambient',ms:800},{p:'bsmr',ms:2000},{p:'ambient',ms:600},{p:'bsml',ms:2000},{p:'ambient',ms:1/0}],
+  };
+  seqQ=(seqs[name]||[]).map(s=>({...s}));
+  nextSeq();
+}
+function nextSeq(){
+  if(!seqQ.length) return;
+  const s=seqQ.shift();
+  _go(s.p);
+  if(isFinite(s.ms)) seqTmr=setTimeout(nextSeq,s.ms);
+}
+
+// ─── canvas ────────────────────────────────────────────────────────────────────
+const cv=id('cv');
+let ctx,dpr,cssW,cssH;
+function setup(){
+  dpr=window.devicePixelRatio||1;
+  cssW=cv.offsetWidth; cssH=cv.offsetHeight;
+  cv.width=cssW*dpr; cv.height=cssH*dpr;
+  ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+}
+window.addEventListener('resize',setup);
+
+function draw(){
+  ctx.clearRect(0,0,cssW,cssH);
+  ctx.fillStyle='#07080c'; ctx.fillRect(0,0,cssW,cssH);
+
+  const step=(cssW-36)/N;
+  const ox=18+step*0.5;
+  const cy=cssH*0.5;
+
+  const chX=16, chW=cssW-32, chY=cy-16, chH=32;
+  const mg=ctx.createLinearGradient(0,chY,0,chY+chH);
+  mg.addColorStop(0,   '#22242e');
+  mg.addColorStop(0.12,'#181a22');
+  mg.addColorStop(0.5, '#101218');
+  mg.addColorStop(0.88,'#181a22');
+  mg.addColorStop(1,   '#22242e');
+  ctx.fillStyle=mg;
+  ctx.beginPath(); ctx.roundRect(chX,chY,chW,chH,6); ctx.fill();
+  const ig=ctx.createLinearGradient(0,chY+3,0,chY+chH-3);
+  ig.addColorStop(0,'#0c0d10'); ig.addColorStop(0.5,'#0a0b0e'); ig.addColorStop(1,'#0c0d10');
+  ctx.fillStyle=ig;
+  ctx.beginPath(); ctx.roundRect(chX+3,chY+3,chW-6,chH-6,3); ctx.fill();
+
+  ctx.save();
+  ctx.globalCompositeOperation='lighter';
+  for(let i=0;i<N;i++){
+    const [r,g,b]=leds[i];
+    const bri=Math.sqrt(r*r+g*g+b*b)/(255*1.732);
+    if(bri<0.018) continue;
+    const x=ox+i*step;
+    const gr=28+bri*10;
+    const gd=ctx.createRadialGradient(x,cy,0,x,cy,gr);
+    gd.addColorStop(0,  `rgba(${r},${g},${b},${(0.28*bri).toFixed(3)})`);
+    gd.addColorStop(0.5,`rgba(${r},${g},${b},${(0.10*bri).toFixed(3)})`);
+    gd.addColorStop(1,  `rgba(${r},${g},${b},0)`);
+    ctx.beginPath(); ctx.arc(x,cy,gr,0,Math.PI*2);
+    ctx.fillStyle=gd; ctx.fill();
+  }
+  ctx.restore();
+
+  ctx.save();
+  ctx.beginPath(); ctx.roundRect(chX+3,chY+3,chW-6,chH-6,3); ctx.clip();
+  ctx.globalCompositeOperation='lighter';
+  for(let i=0;i<N;i++){
+    const [r,g,b]=leds[i];
+    const bri=Math.sqrt(r*r+g*g+b*b)/(255*1.732);
+    if(bri<0.018) continue;
+    const x=ox+i*step;
+    const gw=step*3.8+bri*14;
+    const gh=chH*0.6;
+    ctx.save();
+    ctx.translate(x,cy);
+    ctx.scale(gw/gh,1);
+    const gd=ctx.createRadialGradient(0,0,0,0,0,gh);
+    gd.addColorStop(0,  `rgba(${r},${g},${b},${(0.80*bri+0.05).toFixed(3)})`);
+    gd.addColorStop(0.4,`rgba(${r},${g},${b},${(0.45*bri).toFixed(3)})`);
+    gd.addColorStop(1,  `rgba(${r},${g},${b},0)`);
+    ctx.beginPath(); ctx.arc(0,0,gh,0,Math.PI*2);
+    ctx.fillStyle=gd; ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+
+  ctx.save();
+  ctx.beginPath(); ctx.roundRect(chX+3,chY+4,chW-6,chH-8,3); ctx.clip();
+  for(let i=0;i<N;i++){
+    const [r,g,b]=leds[i];
+    const bri=Math.sqrt(r*r+g*g+b*b)/(255*1.732);
+    const x=ox+i*step;
+    ctx.beginPath(); ctx.arc(x,cy,2.2,0,Math.PI*2);
+    ctx.fillStyle=bri<0.02?'#181920':`rgb(${cl(r+70)},${cl(g+70)},${cl(b+70)})`;
+    ctx.fill();
+  }
+  ctx.restore();
+
+  const cx=18+step*HALF;
+  ctx.save();
+  ctx.strokeStyle='#2a2c38'; ctx.lineWidth=1; ctx.setLineDash([3,5]);
+  ctx.beginPath(); ctx.moveTo(cx,chY-6); ctx.lineTo(cx,chY+chH+6); ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle='#303444'; ctx.font='9px monospace'; ctx.textAlign='center';
+  ctx.fillText('CENTER',cx,chY-9);
+}
+
+// ─── main loop ────────────────────────────────────────────────────────────────
+function tick(now){
+  const el=now-t0;
+  let done=false;
+  switch(preset){
+    case 'off':      done=fOff();           break;
+    case 'wake':     done=fWake(el);        break;
+    case 'wake2':    done=fWake2(el);       break;
+    case 'wake3':    done=fWake3(el);       break;
+    case 'wake4':    done=fWake4(el);       break;
+    case 'goodbye':  done=fGoodbye(el);     break;
+    case 'goodbye2': done=fGoodbye2(el);    break;
+    case 'goodbye3': done=fGoodbye3(el);    break;
+    case 'goodbye4': done=fGoodbye4(el);    break;
+    case 'ambient':  fAmbient(el);          break;
+    case 'ambient2': fAmbient2(el);         break;
+    case 'ambient3': fAmbient3(el);         break;
+    case 'ambient4': fAmbient4(el);         break;
+    case 'bsml':     fBsm(el,'l');          break;
+    case 'bsml2':    fBsm2(el,'l');         break;
+    case 'bsml3':    fBsm3(el,'l');         break;
+    case 'bsml4':    fBsm4(el,'l');         break;
+    case 'bsmr':     fBsm(el,'r');          break;
+    case 'bsmr2':    fBsm2(el,'r');         break;
+    case 'bsmr3':    fBsm3(el,'r');         break;
+    case 'bsmr4':    fBsm4(el,'r');         break;
+    case 'cylon':    fCylon(el);            break;
+    case 'cylon2':   fCylon2(el);           break;
+    case 'cylon3':   fCylon3(el);           break;
+    case 'cylon4':   fCylon4(el);           break;
+    case 'rainbow':  fRainbow(el);          break;
+    case 'rainbow2': fRainbow2(el);         break;
+    case 'rainbow3': fRainbow3(el);         break;
+    case 'rainbow4': fRainbow4(el);         break;
+  }
+
+  if(snap){
+    const tp=Math.min(1,(now-snapT0)/BLEND);
+    const e=tp<0.5?2*tp*tp:1-Math.pow(-2*tp+2,2)/2;
+    for(let i=0;i<N;i++) leds[i]=[
+      snap[i][0]+(leds[i][0]-snap[i][0])*e,
+      snap[i][1]+(leds[i][1]-snap[i][1])*e,
+      snap[i][2]+(leds[i][2]-snap[i][2])*e,
+    ];
+    if(tp>=1) snap=null;
+  }
+
+  if(done&&seqQ.length===0){
+    const cur=preset;
+    if(/^wake/.test(cur)){    preset='__'; _go(cur==='wake4'?'ambient4':'ambient'); }
+    if(/^goodbye/.test(cur)){ preset='__'; _go('off',true); }
+  }
+
+  draw();
+  requestAnimationFrame(tick);
+}
+
+// ─── UI ───────────────────────────────────────────────────────────────────────
+const btnMap={
+  wake:'bW',   wake2:'bW2',  wake3:'bW3',  wake4:'bW4',
+  goodbye:'bG',goodbye2:'bG2',goodbye3:'bG3',goodbye4:'bG4',
+  ambient:'bA',ambient2:'bA2',ambient3:'bA3',ambient4:'bA4',
+  bsml:'bBL',  bsml2:'bBL2', bsml3:'bBL3', bsml4:'bBL4',
+  bsmr:'bBR',  bsmr2:'bBR2', bsmr3:'bBR3', bsmr4:'bBR4',
+  cylon:'bCy', cylon2:'bCy2',cylon3:'bCy3',cylon4:'bCy4',
+  rainbow:'bRb',rainbow2:'bRb2',rainbow3:'bRb3',rainbow4:'bRb4',
+  off:'bO',
+};
+const clsMap={
+  wake:'aw',    wake2:'aw',   wake3:'aw',   wake4:'ard',
+  goodbye:'ag', goodbye2:'ag',goodbye3:'ag',goodbye4:'ard',
+  ambient:'aa', ambient2:'aa2',ambient3:'aa3',ambient4:'ard',
+  bsml:'abl',   bsml2:'abl',  bsml3:'abl',  bsml4:'ard',
+  bsmr:'abr',   bsmr2:'abr',  bsmr3:'abr',  bsmr4:'ard',
+  cylon:'ac',   cylon2:'ac',  cylon3:'ac',  cylon4:'ard',
+  rainbow:'arb',rainbow2:'arb2',rainbow3:'arb3',rainbow4:'ard',
+  off:'ao',
+};
+const stMap={
+  off:      ['', 'Off'],
+  wake:     ['p','Playing: <strong>Ignition</strong> — dual-pulse amber sweep'],
+  wake2:    ['p','Playing: <strong>Neural Spark</strong> — electric blue triple-pulse'],
+  wake3:    ['p','Playing: <strong>Solar Flare</strong> — warm white-gold corona'],
+  wake4:    ['p','Playing: <strong>Red Alert</strong> — clean outbound, reverses with red trail'],
+  goodbye:  ['p','Playing: <strong>Exhale</strong> — inhale, converge, ember fade'],
+  goodbye2: ['p','Playing: <strong>Dissolve</strong> — staggered pixel fadeout'],
+  goodbye3: ['p','Playing: <strong>Curtain</strong> — sharp edge wipe to center'],
+  goodbye4: ['p','Playing: <strong>Code Red</strong> — strobe, drain, center pulse'],
+  ambient:  ['l','Looping: <strong>Aurora</strong> — layered waves + sparkle'],
+  ambient2: ['l','Looping: <strong>Lava</strong> — rolling warm blobs'],
+  ambient3: ['l','Looping: <strong>Plasma</strong> — cyberpunk multi-color'],
+  ambient4: ['l','Looping: <strong>Threat Level</strong> — deep red pulse'],
+  bsml:     ['b','Active: <strong>BSM Left — Beat</strong> — heartbeat amber'],
+  bsml2:    ['b','Active: <strong>BSM Left — Rapid</strong> — fast double-tap'],
+  bsml3:    ['b','Active: <strong>BSM Left — Chase</strong> — edge-inward comet'],
+  bsml4:    ['b','Active: <strong>BSM Left — Critical</strong> — triple red flash'],
+  bsmr:     ['b','Active: <strong>BSM Right — Beat</strong> — heartbeat amber'],
+  bsmr2:    ['b','Active: <strong>BSM Right — Rapid</strong> — fast double-tap'],
+  bsmr3:    ['b','Active: <strong>BSM Right — Chase</strong> — edge-inward comet'],
+  bsmr4:    ['b','Active: <strong>BSM Right — Critical</strong> — triple red flash'],
+  cylon:    ['l','Looping: <strong>Scanner</strong> — warm white/red comet'],
+  cylon2:   ['l','Looping: <strong>Ice</strong> — cool blue/cyan comet'],
+  cylon3:   ['l','Looping: <strong>Dual</strong> — amber + blue twin comets'],
+  cylon4:   ['l','Looping: <strong>T-800</strong> — slow blood red sweep'],
+  rainbow:  ['l','Looping: <strong>Rainbow</strong> — full hue wave drift'],
+  rainbow2: ['l','Looping: <strong>Inferno</strong> — turbulent fire'],
+  rainbow3: ['l','Looping: <strong>Neon City</strong> — cyberpunk neon burst'],
+  rainbow4: ['l','Looping: <strong>Crimson Tide</strong> — red spectrum wave'],
+};
+
+function updateUI(name){
+  Object.entries(btnMap).forEach(([p,bid])=>{
+    const el=id(bid); if(!el) return;
+    el.className='btn'+(p===name&&clsMap[p]?' '+clsMap[p]:'');
+  });
+  const [dc,lbl]=stMap[name]||['',name];
+  id('dot').className='dot'+(dc?' '+dc:'');
+  id('stTxt').innerHTML=lbl;
+}
+
+// ─── boot ─────────────────────────────────────────────────────────────────────
+window.addEventListener('load',()=>{
+  setup(); t0=performance.now();
+  requestAnimationFrame(tick);
+});
+</script>
+</body>
+</html>
