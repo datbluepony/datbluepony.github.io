@@ -226,26 +226,6 @@
     let done = false; whenVisible(cv, () => { if (!done) { done = true; newRun(); } }, null, .4);
   })();
 
-  /* ============ 5. STAG score ============ */
-  (() => {
-    const box = $('#sliders'); if (!box) return;
-    const DIM = [['Title match', 30, 26], ['Skill overlap', 22, 22], ['Domain fit', 12, 12], ['Location', 12, 12], ['Freshness', 8, 8], ['Seniority', 8, 4], ['Salary', 8, 8]];
-    const CAPS = [['No title match', 48], ['Far-away on-site', 42], ['Below salary floor', 45], ['Blocking gap (clearance, PhD, license)', 25]];
-    box.innerHTML = DIM.map(([n, m, v], i) => `<div class="sl"><label for="d${i}">${n}</label><input type="range" id="d${i}" min="0" max="${m}" value="${v}"><output>${v}/${m}</output></div>`).join('') +
-      `<div class="caps">${CAPS.map(([n, c], i) => `<label><input type="checkbox" data-cap="${c}" id="c${i}"> ${n} <span class="muted">≤ ${c}</span></label>`).join('')}</div>`;
-    const ins = $$('input[type=range]', box), cks = $$('input[type=checkbox]', box);
-    const TIERS = [[80, 'Apply immediately', 'var(--sea)'], [68, 'Strong apply', 'var(--olive)'], [55, 'Consider', 'var(--amber)'], [40, 'Low priority', 'var(--muted)'], [0, 'Skip', 'var(--coral)']];
-    const upd = () => {
-      let s = 0; ins.forEach((el, i) => { const v = +el.value; s += v; el.nextElementSibling.textContent = `${v}/${DIM[i][1]}`; el.style.setProperty('--p', v / DIM[i][1] * 100 + '%'); });
-      const raw = s; let why = '';
-      cks.forEach((c, i) => { if (c.checked && s > +c.dataset.cap) { s = +c.dataset.cap; why = `Capped at ${c.dataset.cap}: ${CAPS[i][0].toLowerCase()}. Without the cap it would be ${raw}.`; } });
-      const t = TIERS.find(x => s >= x[0]);
-      $('#ringN').textContent = s; $('#ringV').style.strokeDashoffset = 100 - s; $('#ringV').style.stroke = t[2];
-      $('#ringTier').textContent = t[1]; $('#ringTier').style.color = t[2]; $('#ringWhy').textContent = why || 'Weighted sum of the seven dimensions, out of 100.';
-    };
-    box.addEventListener('input', upd); upd();
-  })();
-
   /* ============ 6. Exposure ============ */
   (() => {
     const box = $('#expo'); if (!box) return;
